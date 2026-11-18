@@ -1,5 +1,5 @@
 /* SmartStock web theme: Material 3 Expressive-inspired, same tokens as the Android app.
-   Brand palette: Deep Teal #013230, Cream #F3EBDD, Orange #FF6A1F (GOAL.md section 9). */
+   Brand palette: Navy #0C1B48, Glacier Blue #62A7EA, Lemon #F2EA1E (GOAL.md section 9). */
 
 @font-face {
 	font-family: "Inter";
@@ -17,23 +17,23 @@
 
 :root {
 	color-scheme: light dark;
-	--primary: #013230;
-	--on-primary: #f3ebdd;
-	--primary-container: #b3e3dc;
-	--on-primary-container: #00201e;
-	--secondary-container: #d3e6df;
-	--on-secondary-container: #051f1d;
-	--accent: #ff6a1f;
-	--on-accent: #1f0800;
-	--surface: #f3ebdd;
-	--on-surface: #1c1b17;
-	--on-surface-variant: #4a4740;
-	--surface-container-lowest: #fffbf5;
-	--surface-container-low: #eee5d6;
-	--surface-container: #e8dfcf;
-	--surface-container-high: #e2d9c9;
-	--outline: #7b776c;
-	--outline-variant: #cfc6b6;
+	--primary: #0c1b48;
+	--on-primary: #fff;
+	--primary-container: #d6e7fb;
+	--on-primary-container: #001b3d;
+	--secondary-container: #cfe3fa;
+	--on-secondary-container: #0a1c36;
+	--accent: #f2ea1e;
+	--on-accent: #0c1b48;
+	--surface: #f7f9fd;
+	--on-surface: #191c22;
+	--on-surface-variant: #444852;
+	--surface-container-lowest: #fff;
+	--surface-container-low: #f1f4fa;
+	--surface-container: #ebeff6;
+	--surface-container-high: #e5e9f1;
+	--outline: #747883;
+	--outline-variant: #c4c7d1;
 	--error: #ba1a1a;
 	--error-container: #ffdad6;
 	--on-error-container: #410002;
@@ -53,21 +53,21 @@
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		--primary: #8ccfc6;
-		--on-primary: #003733;
-		--primary-container: #1b4a47;
-		--on-primary-container: #b3e3dc;
-		--secondary-container: #334b48;
-		--on-secondary-container: #d3e6df;
-		--surface: #0b1a19;
-		--on-surface: #ece3d5;
-		--on-surface-variant: #bfc8c5;
-		--surface-container-lowest: #071413;
-		--surface-container-low: #112221;
-		--surface-container: #152726;
-		--surface-container-high: #1f3231;
-		--outline: #8a9290;
-		--outline-variant: #3f4947;
+		--primary: #62a7ea;
+		--on-primary: #00213f;
+		--primary-container: #1d3a6e;
+		--on-primary-container: #d6e7fb;
+		--secondary-container: #2a3c63;
+		--on-secondary-container: #dce6f9;
+		--surface: #0b1430;
+		--on-surface: #e1e6f5;
+		--on-surface-variant: #c2c7d8;
+		--surface-container-lowest: #070e24;
+		--surface-container-low: #111a38;
+		--surface-container: #15203f;
+		--surface-container-high: #1f2a4a;
+		--outline: #8d93a6;
+		--outline-variant: #3f4762;
 		--error: #ffb4ab;
 		--error-container: #93000a;
 		--on-error-container: #ffdad6;

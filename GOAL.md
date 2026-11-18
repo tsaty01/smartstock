@@ -188,10 +188,10 @@ Scope reference: `docs/reference-audit.md` (domain model, behaviors worth matchi
 - Keep dashboards, table-heavy screens, and checkout flows **functional rather than overly decorative**.
 - Respect reduced-motion preferences where practical.
 
-### Color palette — Deep Teal, Cream, Orange
+### Color palette — Navy, Glacier Blue, Lemon
 
-- Chosen from the reel supplied for the project (https://www.instagram.com/reel/DfuhfgpRQxa/), whose swatches name the hex values: **Deep Teal `#013230`**, **Cream `#F3EBDD`**, **Orange `#FF6A1F`**. The reel's other sets (Glacier Blue/Navy/Lemon, Cream/Ink/Orchid Pink) were not chosen: teal and cream read as calm and trustworthy for stock and money, and orange is kept for the one action that matters most, charging a sale.
-- Light theme: Deep Teal `primary` on a Cream `background`/`surface`; Orange as the accent (`tertiaryContainer`) with dark text, since white on Orange fails contrast. Dark theme: teal-black surfaces, light teal `primary`, Cream text, the same Orange accent.
+- Chosen from the reel supplied for the project (https://www.instagram.com/reel/DfuhfgpRQxa/), whose swatches name the hex values: **Navy `#0C1B48`**, **Glacier Blue `#62A7EA`**, **Lemon `#F2EA1E`**.
+- Light theme: Navy `primary` on a cool near-white surface, Glacier Blue tints for containers and selection; Lemon as the accent (`tertiaryContainer`) with Navy text, kept for the one action that matters most, charging a sale. Dark theme: navy-black surfaces, Glacier Blue `primary`, the same Lemon accent.
 - Stock-status colours (ok, warning, danger) are separate semantic tokens so they keep their meaning in both themes.
 - Support **light and dark themes** with accessible contrast. Optional Android dynamic color must not destroy SmartStock's brand/status semantics.
 - Store theme values centrally (Compose theme + CSS custom properties), not duplicated as arbitrary colors throughout screens.
@@ -331,7 +331,7 @@ A release is considered **course-demo ready** only when all the following are tr
 | Appwrite dependency | **Excluded** |
 | KMP | **Excluded** |
 | Core fonts: Inter Variable + Source Serif 4 Variable | **Chosen** |
-| Brand color hex values from the Instagram reel | Deep Teal `#013230`, Cream `#F3EBDD`, Orange `#FF6A1F` |
+| Brand color hex values from the Instagram reel | Navy `#0C1B48`, Glacier Blue `#62A7EA`, Lemon `#F2EA1E` |
 | Exact Spring Boot / Compose / dependency versions | Choose compatible stable versions during bootstrap |
 | API authentication for Android | **Chosen:** HS256 JWT bearer tokens via Spring Security resource server; account reloaded per request |
 | Optional enhancements (barcode scan, notifications, advanced exports) | After core scope |
