@@ -5,11 +5,12 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-/** Renders every error as RFC 9457 problem details without exposing database messages. */
-@RestControllerAdvice
+/** Renders REST API errors as RFC 9457 problem details without exposing database messages. */
+@RestControllerAdvice(annotations = RestController.class)
 class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler

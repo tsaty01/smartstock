@@ -22,7 +22,12 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
+
+import com.smartstock.auth.UserRepository;
 
 import com.smartstock.common.SmartstockProperties;
 
@@ -44,14 +49,27 @@ class SecurityConfig {
 			.build();
 	}
 
+	/** Website: session sign-in with CSRF protection on every form. Role checks sit on the page controllers. */
 	@Bean
 	@Order(2)
-	SecurityFilterChain defaultSecurity(HttpSecurity http) throws Exception {
+	SecurityFilterChain webSecurity(HttpSecurity http, UserRepository users) throws Exception {
 		return http
 			.authorizeHttpRequests(requests -> requests
-				.requestMatchers("/actuator/health/**", "/actuator/info").permitAll()
-				.anyRequest().denyAll())
+				.requestMatchers("/actuator/health/**", "/actuator/info", "/css/**", "/fonts/**", "/favicon.svg",
+						"/login", "/register", "/error")
+				.permitAll()
+				.anyRequest().authenticated())
+			.formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/", true))
+			.logout(logout -> logout.logoutSuccessUrl("/login?logout"))
+			.addFilterBefore(new SessionUserFilter(users), AuthorizationFilter.class)
 			.build();
+	}
+
+	@Bean
+	UserDetailsService userDetailsService(UserRepository users) {
+		return username -> users.findByUsernameIgnoreCase(username)
+			.map(Account::new)
+			.orElseThrow(() -> new UsernameNotFoundException("Unknown user"));
 	}
 
 	@Bean

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page('Offers', ~{::#page})}">
+<body>
+<div id="page">
+	<div class="page-head"><h1>Offers</h1></div>
+	<p class="muted">The till applies the highest matching active offer when no manual discount is given.</p>
+	<div class="table-wrap">
+		<table>
+			<thead><tr><th>Name</th><th class="num">Min. items</th><th class="num">Min. amount (₹)</th><th class="num">Discount %</th><th>From</th><th>To</th><th>Active</th><th></th></tr></thead>
+			<tbody>
+			<tr th:each="r : ${rules}">
+				<td colspan="8">
+					<form class="row" method="post" th:action="@{/discounts/{id}(id=${r.id()})}" style="flex-wrap:nowrap">
+						<th:block th:replace="~{discounts :: rule-fields(${r})}"></th:block>
+						<button class="text small" type="submit" style="flex:0 0 auto">Save</button>
+					</form>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<h2>Add an offer</h2>
+	<form class="card row" method="post" th:action="@{/discounts}">
+		<th:block th:replace="~{discounts :: rule-fields(null)}"></th:block>
+		<button type="submit" style="flex:0 0 auto">Add</button>
+	</form>
+</div>
+
+<th:block th:fragment="rule-fields(r)">
+	<input name="name" th:value="${r?.name()}" required maxlength="100" aria-label="Name" placeholder="Name">
+	<input type="number" name="minQuantity" min="1" th:value="${r?.minQuantity()} ?: 1" required aria-label="Minimum items">
+	<input type="number" name="minAmount" min="0" step="0.01" th:value="${r?.minAmount()} ?: 0" required aria-label="Minimum amount">
+	<input type="number" name="percent" min="0.01" max="100" step="0.01" th:value="${r?.percent()}" required aria-label="Discount percent">
+	<input type="date" name="validFrom" th:value="${r?.validFrom()}" aria-label="Valid from">
+	<input type="date" name="validTo" th:value="${r?.validTo()}" aria-label="Valid to">
+	<label class="check" style="flex:0 0 auto"><input type="checkbox" name="active" value="true" th:checked="${r == null or r.active()}"> Active</label>
+</th:block>
+</body>
+</html>

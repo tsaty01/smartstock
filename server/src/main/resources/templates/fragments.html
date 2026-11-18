@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Customer account fields shared by self-registration and registration at the till. -->
+<th:block th:fragment="customer-fields(form, errors)">
+	<label>Full name <input name="fullName" th:value="${form?.fullName()}" required maxlength="100"></label>
+	<span class="field-error" th:if="${errors['fullName']}" th:text="${errors['fullName']}"></span>
+	<label>Username <input name="username" th:value="${form?.username()}" required minlength="3" maxlength="50"
+						   pattern="[A-Za-z0-9._\-]+" autocomplete="off"></label>
+	<span class="field-error" th:if="${errors['username']}" th:text="${errors['username']}"></span>
+	<label>Mobile number (optional) <input name="phone" th:value="${form?.phone()}" inputmode="numeric" pattern="[0-9]{10}" maxlength="10"></label>
+	<span class="field-error" th:if="${errors['phone']}" th:text="${errors['phone']}"></span>
+	<label>Email (optional) <input name="email" type="email" th:value="${form?.email()}"></label>
+	<span class="field-error" th:if="${errors['email']}" th:text="${errors['email']}"></span>
+	<label>Password <input name="password" type="password" required minlength="8" maxlength="72" autocomplete="new-password"></label>
+	<span class="field-error" th:if="${errors['password']}" th:text="${errors['password']}"></span>
+</th:block>
+
+<!-- Stock status of a product view. -->
+<th:block th:fragment="stock(p)">
+	<span class="pill danger" th:if="${p.expired()}">Expired</span>
+	<span class="pill danger" th:if="${!p.expired() and p.stock() == 0}">Out of stock</span>
+	<span class="pill warning" th:if="${!p.expired() and p.stock() > 0 and p.lowStock()}" th:text="${p.stock()} + ' left'"></span>
+	<span class="pill ok" th:if="${!p.expired() and !p.lowStock()}" th:text="${p.stock()} + ' in stock'"></span>
+</th:block>
+
+</body>
+</html>
