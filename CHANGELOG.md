@@ -1,3 +1,11 @@
+## [1.0.0-dev.4](https://github.com/tsaty01/[secure]/compare/v1.0.0-dev.3...v1.0.0-dev.4) (2026-11-18)
+
+### Features
+
+* **android:** apply the Deep Teal, Cream and Orange brand palette ([3925333](https://github.com/tsaty01/[secure]/commit/392533391e69769ce87d7fc33029c250c88bbd65))
+* switch the brand palette to Navy, Glacier Blue and Lemon ([d4820cc](https://github.com/tsaty01/[secure]/commit/d4820ccfcf0814b0512882060da027c6fa7f8c5b))
+* **web:** add Thymeleaf website with session sign-in, till, catalog, orders and admin pages ([776c84a](https://github.com/tsaty01/[secure]/commit/776c84a762cefd3f111e8bd010d90c4f03e59f54))
+
 ## [1.0.0-dev.3](https://github.com/tsaty01/[secure]/compare/v1.0.0-dev.2...v1.0.0-dev.3) (2026-11-18)
 
 ### Features
