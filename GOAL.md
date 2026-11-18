@@ -253,10 +253,10 @@ SmartStock/
 
 ### Phase 1 — Java backend and PostgreSQL
 
-- [ ] Implement Flyway schema and safe test fixtures.
-- [ ] Implement Spring Security and role-aware APIs.
-- [ ] Implement products, categories, inventory, POS/checkout, orders, alerts, and reporting.
-- [ ] Verify transaction atomicity, stock concurrency, expiry/discount logic, and authorization.
+- [x] Implement Flyway schema and safe test fixtures.
+- [x] Implement Spring Security and role-aware APIs.
+- [x] Implement products, categories, inventory, POS/checkout, orders, alerts, and reporting.
+- [x] Verify transaction atomicity, stock concurrency, expiry/discount logic, and authorization.
 
 **Gate:** Tested APIs deliver the essential SmartStock operations.
 
@@ -332,7 +332,7 @@ A release is considered **course-demo ready** only when all the following are tr
 | Core fonts: Inter Variable + Source Serif 4 Variable | **Chosen** |
 | Brand color hex values from the Instagram reel | **Pending verified palette** |
 | Exact Spring Boot / Compose / dependency versions | Choose compatible stable versions during bootstrap |
-| JWT vs another API session approach for Android | Decide in security design; Spring Security stays authoritative |
+| API authentication for Android | **Chosen:** HS256 JWT bearer tokens via Spring Security resource server; account reloaded per request |
 | Optional enhancements (barcode scan, notifications, advanced exports) | After core scope |
 | Exact homelab hostname/infrastructure topology | Deployment configuration; not a product dependency |
 

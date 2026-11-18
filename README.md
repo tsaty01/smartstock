@@ -2,7 +2,7 @@
 
 Inventory and billing system for retail stores: a native Android app and a Spring MVC website on one Java 21 Spring Boot backend with PostgreSQL. UCS553 (Enterprise Web Application), TIET Patiala.
 
-Goals and plan: [GOAL.md](GOAL.md). Architecture: [docs/architecture.md](docs/architecture.md).
+Goals and plan: [GOAL.md](GOAL.md). Architecture: [docs/architecture.md](docs/architecture.md). REST API: [docs/api.md](docs/api.md).
 
 ## Layout
 
@@ -16,10 +16,13 @@ Goals and plan: [GOAL.md](GOAL.md). Architecture: [docs/architecture.md](docs/ar
 ## Run with Docker
 
 ```sh
-cp .env.example .env    # set DB_PASSWORD
+cp .env.example .env    # set DB_PASSWORD and TOKEN_SECRET
 docker compose up -d --build
 curl http://localhost:8080/actuator/health
+curl -H 'Content-Type: application/json' -d '{"username":"manager","password":"smartstock"}' http://localhost:8080/api/auth/login
 ```
+
+With `SPRING_PROFILES_ACTIVE=demo`, sample data is loaded: products, discount rules and the accounts `admin`, `manager`, `cashier`, `cashier2`, `customer`, `customer2`, all with password `smartstock`. Leave the profile empty for a clean database.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
@@ -27,6 +30,10 @@ curl http://localhost:8080/actuator/health
 | `DB_PASSWORD` | required | Database password |
 | `DB_PORT` | `5432` | Host port for PostgreSQL (localhost only) |
 | `APP_PORT` | `8080` | Host port for the application |
+| `TOKEN_SECRET` | required | API token signing key, at least 32 characters |
+| `SPRING_PROFILES_ACTIVE` | empty | `demo` loads sample data |
+
+Product images are stored in the `app-data` volume, the database in `db-data`.
 
 ## Develop
 
@@ -35,7 +42,7 @@ Requires JDK 21. Tests need Docker (Testcontainers).
 ```sh
 docker compose up -d db
 cd server
-DB_PASSWORD=change-me ./gradlew bootRun   # or: ./gradlew bootTestRun (throwaway Testcontainers database)
+DB_PASSWORD=change-me TOKEN_SECRET=<32+ chars> ./gradlew bootRun --args=--spring.profiles.active=demo
 ./gradlew build
 ```
 
