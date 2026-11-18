@@ -45,7 +45,8 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org). Work
 
 | Artifact | Where |
 | --- | --- |
-| Server JAR (includes the website) | GitHub release asset |
+| `smartstock-server-<version>-all.jar`: executable fat JAR (includes the website) | GitHub release asset |
+| `smartstock-server-<version>.jar`: plain JAR, dependencies not included | GitHub release asset |
 | Server image | `ghcr.io/<owner>/<repo>-server:<version>`, plus `latest` (main) or `dev` |
 | Android APK | GitHub release asset (once `android/` exists) |
 

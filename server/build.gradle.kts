@@ -36,7 +36,11 @@ dependencies {
 }
 
 tasks.jar {
-	enabled = false
+	archiveClassifier = ""
+}
+
+tasks.bootJar {
+	archiveClassifier = "all"
 }
 
 tasks.withType<Test> {

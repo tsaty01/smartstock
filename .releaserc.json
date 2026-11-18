@@ -34,7 +34,9 @@
       "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
     }],
     ["@semantic-release/github", {
-      "assets": [{ "path": "server/build/libs/server-*.jar", "label": "Server and website (executable JAR)" }],
+      "assets": [
+        "server/build/libs/smartstock-server-*.jar"
+      ],
       "successComment": false,
       "failComment": false,
       "releasedLabels": false
