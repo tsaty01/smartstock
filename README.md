@@ -42,14 +42,8 @@ Open http://localhost:8080 and sign in. Each role lands on its own page: managem
 
 ## Android app
 
-Install the APK from a GitHub release (Android 8.0 or later):
-
-| APK | Server connection |
-| --- | --- |
-| `smartstock-android-<version>.apk` | HTTPS only |
-| `smartstock-android-<version>-http.apk` | Also plain HTTP, for a laptop or local-network server |
-
-On the sign-in screen, tap **Server** to set the address, e.g. `http://192.168.1.20:8080`. The emulator default `http://10.0.2.2:8080` reaches a server on the host machine. The session token is stored encrypted with an Android Keystore key and is not backed up.
+Install `smartstock-android-<version>.apk` from a GitHub release (Android 8.0 or later).
+On the sign-in screen, tap **Server** to set the address, HTTPS or plain HTTP, e.g. `http://192.168.1.20:8080`. The emulator default `http://10.0.2.2:8080` reaches a server on the host machine. The session token is stored encrypted with an Android Keystore key and is not backed up.
 
 Screens by role: management gets Dashboard, Products (add, edit, restock, adjust, photo, stock history), Sell, Orders, Alerts, Reports and Users (admin); cashiers get Sell, Orders and Products; customers get their purchases and the shop catalog. The till prices every cart through the server's quote endpoint, so totals, offers and tax always match the receipt.
 
@@ -78,7 +72,7 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org). Work
 | `smartstock-server-<version>-all.jar`: executable fat JAR (includes the website) | GitHub release asset |
 | `smartstock-server-<version>.jar`: plain JAR, dependencies not included | GitHub release asset |
 | Server image | `ghcr.io/<owner>/<repo>-server:<version>`, plus `latest` (main) or `dev` |
-| `smartstock-android-<version>.apk` and `-http.apk`: signed Android app | GitHub release asset |
+| `smartstock-android-<version>.apk`: signed Android app | GitHub release asset |
 
 | Branch | Release |
 | --- | --- |

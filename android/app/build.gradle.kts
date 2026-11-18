@@ -25,8 +25,6 @@ android {
 		versionName = appVersion
 		versionCode = versionCodeOf(appVersion)
 		buildConfigField("String", "DEFAULT_SERVER_URL", "\"http://10.0.2.2:8080\"")
-		// Release builds require HTTPS; -PallowCleartext=true permits a plain-HTTP laptop or LAN server.
-		manifestPlaceholders["usesCleartextTraffic"] = providers.gradleProperty("allowCleartext").getOrElse("false")
 	}
 
 	signingConfigs {
@@ -40,9 +38,6 @@ android {
 	}
 
 	buildTypes {
-		debug {
-			manifestPlaceholders["usesCleartextTraffic"] = "true"
-		}
 		release {
 			isMinifyEnabled = true
 			isShrinkResources = true
