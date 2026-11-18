@@ -22,6 +22,7 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -228,6 +229,10 @@ private fun Summary(vm: PosViewModel, user: User, onCheckout: () -> Unit) {
 				onClick = onCheckout,
 				Modifier.fillMaxWidth(),
 				enabled = vm.customer != null && q != null && !vm.busy,
+				colors = ButtonDefaults.buttonColors(
+					containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+					contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+				),
 			) {
 				when {
 					vm.busy -> LoadingIndicator(Modifier.size(24.dp))
