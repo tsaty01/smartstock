@@ -9,7 +9,7 @@ Goals and plan: [GOAL.md](GOAL.md). Architecture: [docs/architecture.md](docs/ar
 | Path | Contents |
 | --- | --- |
 | `server/` | Spring Boot application (Gradle) |
-| `android/` | Android app (planned) |
+| `android/` | Android app (Kotlin, Jetpack Compose, Material 3 Expressive) |
 | `docs/` | Architecture and design notes |
 | `compose.yaml` | PostgreSQL + application |
 
@@ -35,27 +35,45 @@ With `SPRING_PROFILES_ACTIVE=demo`, sample data is loaded: products, discount ru
 
 Product images are stored in the `app-data` volume, the database in `db-data`.
 
+## Android app
+
+Install the APK from a GitHub release (Android 8.0 or later):
+
+| APK | Server connection |
+| --- | --- |
+| `smartstock-android-<version>.apk` | HTTPS only |
+| `smartstock-android-<version>-http.apk` | Also plain HTTP, for a laptop or local-network server |
+
+On the sign-in screen, tap **Server** to set the address, e.g. `http://192.168.1.20:8080`. The emulator default `http://10.0.2.2:8080` reaches a server on the host machine. The session token is stored encrypted with an Android Keystore key and is not backed up.
+
+Screens by role: management gets Dashboard, Products (add, edit, restock, adjust, photo, stock history), Sell, Orders, Alerts, Reports and Users (admin); cashiers get Sell, Orders and Products; customers get their purchases and the shop catalog. The till prices every cart through the server's quote endpoint, so totals, offers and tax always match the receipt.
+
 ## Develop
 
-Requires JDK 21. Tests need Docker (Testcontainers).
+Requires JDK 21. Server tests need Docker (Testcontainers); the Android build needs the Android SDK (`ANDROID_HOME`).
 
 ```sh
 docker compose up -d db
 cd server
 DB_PASSWORD=change-me TOKEN_SECRET=<32+ chars> ./gradlew bootRun --args=--spring.profiles.active=demo
 ./gradlew build
+
+cd ../android
+./gradlew lintDebug assembleDebug    # app/build/outputs/apk/debug
 ```
+
+Release APKs are signed in CI with the `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` and `ANDROID_KEY_PASSWORD` repository secrets.
 
 ## Releases
 
-Commits follow [Conventional Commits](https://www.conventionalcommits.org). Work lands on `dev`; `main` receives merges from `dev`. After CI passes, semantic-release picks the next version, updates `CHANGELOG.md` and `server/gradle.properties`, tags and publishes a GitHub release with notes and artifacts:
+Commits follow [Conventional Commits](https://www.conventionalcommits.org). Work lands on `dev`; `main` receives merges from `dev`. After CI passes, semantic-release picks the next version, updates `CHANGELOG.md`, `server/gradle.properties` and `android/gradle.properties`, tags and publishes a GitHub release with notes and artifacts:
 
 | Artifact | Where |
 | --- | --- |
 | `smartstock-server-<version>-all.jar`: executable fat JAR (includes the website) | GitHub release asset |
 | `smartstock-server-<version>.jar`: plain JAR, dependencies not included | GitHub release asset |
 | Server image | `ghcr.io/<owner>/<repo>-server:<version>`, plus `latest` (main) or `dev` |
-| Android APK | GitHub release asset (once `android/` exists) |
+| `smartstock-android-<version>.apk` and `-http.apk`: signed Android app | GitHub release asset |
 
 | Branch | Release |
 | --- | --- |

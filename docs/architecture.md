@@ -53,4 +53,4 @@ Feature reference and known pitfalls: [reference-audit.md](reference-audit.md).
 - [x] Users: admin management, cashier customer lookup and in-place customer registration
 - [x] Integration and concurrency tests (Testcontainers PostgreSQL)
 - [ ] Thymeleaf website
-- [ ] Android app
+- [x] Android app: role-aware Compose screens, encrypted session, server-priced till, signed release APKs

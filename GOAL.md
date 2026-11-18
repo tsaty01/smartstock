@@ -270,9 +270,9 @@ SmartStock/
 
 ### Phase 3 — Native Android app
 
-- [ ] Implement theme, fonts, navigation, authentication, and networking.
-- [ ] Implement role-aware Compose screens for the essential workflows.
-- [ ] Handle loading/empty/error cases and mobile accessibility.
+- [x] Implement theme, fonts, navigation, authentication, and networking.
+- [x] Implement role-aware Compose screens for the essential workflows.
+- [x] Handle loading/empty/error cases and mobile accessibility.
 - [ ] Validate Android actions against the web client and database.
 
 **Gate:** Entire primary demo can be executed in the Android app.
