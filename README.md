@@ -62,7 +62,7 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org). Work
 | `dev` | Prerelease `X.Y.Z-dev.N` |
 | `main` | Stable `X.Y.Z` |
 
-Pushes to `dev`/`main` run CI, then semantic-release (`.releaserc.json`, scripts in `.github/scripts/`). A prerelease on `dev` opens (or retitles) a `dev → main` pull request. Merge it with a merge commit, not a squash, so the conventional commits reach `main`. After a stable release, `main` is back-merged into `dev`. Dependabot targets `dev`.
+Pushes to `dev`/`main` run CI, then semantic-release (`.releaserc.json`, scripts in `.github/scripts/`). A prerelease on `dev` opens a ``chore: Merge branch `dev` to `main` `` pull request if none is open. Merge it with a merge commit, not a squash, so the conventional commits reach `main`. After a stable release, `main` is back-merged into `dev`. Dependabot targets `dev`.
 
 Repository setting required: Actions → General → Allow GitHub Actions to create pull requests.
 
