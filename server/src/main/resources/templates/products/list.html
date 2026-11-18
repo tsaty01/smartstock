@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page('Products', ~{::#page})}">
+<body>
+<div id="page">
+	<div class="page-head">
+		<h1>Products</h1>
+		<a class="btn" href="/products/new">+ Add product</a>
+	</div>
+	<form class="row" method="get" th:action="@{/products}" style="margin-bottom:1rem">
+		<input class="search" type="search" name="q" th:value="${q}" placeholder="Search by name or barcode" aria-label="Search">
+		<select name="categoryId" aria-label="Category" style="flex:0 1 220px">
+			<option value="">All categories</option>
+			<option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}" th:selected="${c.id == categoryId}"></option>
+		</select>
+		<input type="hidden" name="show" th:value="${show}">
+		<button class="tonal" type="submit" style="flex:0 0 auto">Search</button>
+	</form>
+	<nav class="chips" aria-label="Stock filter">
+		<a th:each="f : ${ {'all','low','out','expiring','expired','inactive'} }" class="chip"
+		   th:classappend="${show == f} ? active"
+		   th:href="@{/products(q=${q}, categoryId=${categoryId}, show=${f})}"
+		   th:text="${ {'all':'All','low':'Low stock','out':'Out of stock','expiring':'Expiring','expired':'Expired','inactive':'Inactive'}[f] }">All</a>
+	</nav>
+	<div class="table-wrap">
+		<table>
+			<thead><tr><th>Product</th><th>Category</th><th class="num">Price</th><th>Stock</th><th>Expiry</th><th></th></tr></thead>
+			<tbody>
+			<tr th:each="p : ${products}">
+				<td>
+					<a th:href="@{/products/{id}(id=${p.id()})}" th:text="${p.name()}"></a>
+					<div class="muted" style="font-size:.8125rem" th:text="${p.barcode()} ?: 'No barcode'"></div>
+				</td>
+				<td th:text="${p.categoryName()}"></td>
+				<td class="num" th:text="${@fmt.money(p.price())}"></td>
+				<td><th:block th:replace="~{fragments :: stock(${p})}"></th:block>
+					<span class="pill" th:unless="${p.active()}" style="background:var(--surface-container-high)">Inactive</span></td>
+				<td th:text="${p.expiryDate() != null} ? ${@fmt.date(p.expiryDate())} : '–'"></td>
+				<td class="right"><a class="btn text small" th:href="@{/products/{id}/edit(id=${p.id()})}">Edit</a></td>
+			</tr>
+			<tr th:if="${products.isEmpty()}"><td colspan="6" class="empty">No products match</td></tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+</body>
+</html>

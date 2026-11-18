@@ -81,7 +81,7 @@ flowchart TD
 | Schema migrations | **Flyway** | Versioned, reproducible SQL |
 | Authentication and authorization | **Spring Security** | Roles enforced on the server |
 | Build | **Gradle** | Separate Android and backend builds within one repo |
-| Backend tests | **JUnit 5 + Mockito + integration tests** | Prefer Testcontainers/PostgreSQL for DB behavior |
+| Backend tests | **JUnit 5 + Mockito + integration tests** | Integration tests run against a real embedded PostgreSQL, no Docker needed |
 | Deployment | **Docker Compose** | Spring Boot + PostgreSQL + persistent storage |
 | Typography | **Inter Variable + Source Serif 4 Variable** | Same roles across Android and web |
 | Theme | **Material 3 Expressive-inspired** | Native M3E on Android; custom consistent web components |
@@ -188,10 +188,11 @@ Scope reference: `docs/reference-audit.md` (domain model, behaviors worth matchi
 - Keep dashboards, table-heavy screens, and checkout flows **functional rather than overly decorative**.
 - Respect reduced-motion preferences where practical.
 
-### Color palette — pending selection
+### Color palette — Navy, Glacier Blue, Lemon
 
-- **Do not finalize or invent brand hex values yet.** Select the palette from the Instagram reel supplied for the project: https://www.instagram.com/reel/DfuhfgpRQxa/ . The reel's actual colors still need to be supplied/verified via screenshots or video.
-- Once selected, define semantic tokens for `primary`, `onPrimary`, `secondary`, `background`, `surface`, `onSurface`, `outline`, `error`, `success`, `warning`, and stock-status indicators.
+- Chosen from the reel supplied for the project (https://www.instagram.com/reel/DfuhfgpRQxa/), whose swatches name the hex values: **Navy `#0C1B48`**, **Glacier Blue `#62A7EA`**, **Lemon `#F2EA1E`**.
+- Light theme: Navy `primary` on a cool near-white surface, Glacier Blue tints for containers and selection; Lemon as the accent (`tertiaryContainer`) with Navy text, kept for the one action that matters most, charging a sale. Dark theme: navy-black surfaces, Glacier Blue `primary`, the same Lemon accent.
+- Stock-status colours (ok, warning, danger) are separate semantic tokens so they keep their meaning in both themes.
 - Support **light and dark themes** with accessible contrast. Optional Android dynamic color must not destroy SmartStock's brand/status semantics.
 - Store theme values centrally (Compose theme + CSS custom properties), not duplicated as arbitrary colors throughout screens.
 
@@ -253,33 +254,33 @@ SmartStock/
 
 ### Phase 1 — Java backend and PostgreSQL
 
-- [ ] Implement Flyway schema and safe test fixtures.
-- [ ] Implement Spring Security and role-aware APIs.
-- [ ] Implement products, categories, inventory, POS/checkout, orders, alerts, and reporting.
-- [ ] Verify transaction atomicity, stock concurrency, expiry/discount logic, and authorization.
+- [x] Implement Flyway schema and safe test fixtures.
+- [x] Implement Spring Security and role-aware APIs.
+- [x] Implement products, categories, inventory, POS/checkout, orders, alerts, and reporting.
+- [x] Verify transaction atomicity, stock concurrency, expiry/discount logic, and authorization.
 
 **Gate:** Tested APIs deliver the essential SmartStock operations.
 
 ### Phase 2 — Java website
 
-- [ ] Implement Thymeleaf layouts, role-specific pages, forms, dashboards, and POS.
-- [ ] Reuse shared Java services, not separate business implementations.
-- [ ] Verify browser login, product workflows, sales, receipts, and reports.
+- [x] Implement Thymeleaf layouts, role-specific pages, forms, dashboards, and POS.
+- [x] Reuse shared Java services, not separate business implementations.
+- [x] Verify browser login, product workflows, sales, receipts, and reports.
 
 **Gate:** Full critical browser demo works with the Java backend and PostgreSQL.
 
 ### Phase 3 — Native Android app
 
-- [ ] Implement theme, fonts, navigation, authentication, and networking.
-- [ ] Implement role-aware Compose screens for the essential workflows.
-- [ ] Handle loading/empty/error cases and mobile accessibility.
-- [ ] Validate Android actions against the web client and database.
+- [x] Implement theme, fonts, navigation, authentication, and networking.
+- [x] Implement role-aware Compose screens for the essential workflows.
+- [x] Handle loading/empty/error cases and mobile accessibility.
+- [x] Validate Android actions against the web client and database.
 
 **Gate:** Entire primary demo can be executed in the Android app.
 
 ### Phase 4 — Refinement, tests and deployment
 
-- [ ] Finalize selected color palette and light/dark themes.
+- [x] Finalize selected color palette and light/dark themes.
 - [ ] Add targeted enhancements only after the core scope is complete.
 - [ ] Run unit, integration, Android UI, and cross-client acceptance tests.
 - [ ] Produce production-like Docker deployment, backups, documentation, and a local fallback.
@@ -330,9 +331,9 @@ A release is considered **course-demo ready** only when all the following are tr
 | Appwrite dependency | **Excluded** |
 | KMP | **Excluded** |
 | Core fonts: Inter Variable + Source Serif 4 Variable | **Chosen** |
-| Brand color hex values from the Instagram reel | **Pending verified palette** |
+| Brand color hex values from the Instagram reel | Navy `#0C1B48`, Glacier Blue `#62A7EA`, Lemon `#F2EA1E` |
 | Exact Spring Boot / Compose / dependency versions | Choose compatible stable versions during bootstrap |
-| JWT vs another API session approach for Android | Decide in security design; Spring Security stays authoritative |
+| API authentication for Android | **Chosen:** HS256 JWT bearer tokens via Spring Security resource server; account reloaded per request |
 | Optional enhancements (barcode scan, notifications, advanced exports) | After core scope |
 | Exact homelab hostname/infrastructure topology | Deployment configuration; not a product dependency |
 

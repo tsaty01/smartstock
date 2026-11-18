@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Create account · SmartStock</title>
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+	<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<main class="auth">
+	<form class="card" method="post" th:action="@{/register}">
+		<h1>SmartStock</h1>
+		<p class="muted" style="margin:0">Create a customer account to see your purchases and receipts.</p>
+		<div class="flash error" role="alert" th:if="${error}" th:text="${error}"></div>
+		<th:block th:replace="~{fragments :: customer-fields(${form}, ${errors})}"></th:block>
+		<button type="submit">Create account</button>
+		<a class="btn text" href="/login">Already registered? Sign in</a>
+	</form>
+</main>
+</body>
+</html>

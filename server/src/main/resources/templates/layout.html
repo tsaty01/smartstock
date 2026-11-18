@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="page(title, content)">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title th:text="${title} + ' · SmartStock'">SmartStock</title>
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+	<link rel="preload" href="/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+	<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<div class="app">
+	<nav class="rail" aria-label="Main">
+		<a class="brand" href="/">SmartStock</a>
+		<th:block th:if="${management}">
+			<a class="nav" href="/dashboard" th:classappend="${path == '/dashboard'} ? active">Dashboard</a>
+			<a class="nav" href="/products" th:classappend="${#strings.startsWith(path, '/products')} ? active">Products</a>
+			<a class="nav" href="/categories" th:classappend="${path == '/categories'} ? active">Categories</a>
+		</th:block>
+		<th:block th:if="${staff}">
+			<a class="nav" href="/pos" th:classappend="${#strings.startsWith(path, '/pos')} ? active">Sell</a>
+		</th:block>
+		<a class="nav" href="/orders" th:classappend="${#strings.startsWith(path, '/orders')} ? active"
+		   th:text="${staff} ? 'Orders' : 'My purchases'">Orders</a>
+		<a class="nav" href="/shop" th:unless="${staff}" th:classappend="${path == '/shop'} ? active">Shop</a>
+		<th:block th:if="${management}">
+			<a class="nav" href="/alerts" th:classappend="${path == '/alerts'} ? active">Alerts</a>
+			<a class="nav" href="/reports" th:classappend="${path == '/reports'} ? active">Reports</a>
+			<a class="nav" href="/discounts" th:classappend="${#strings.startsWith(path, '/discounts')} ? active">Offers</a>
+		</th:block>
+		<a class="nav" href="/users" th:if="${admin}" th:classappend="${#strings.startsWith(path, '/users')} ? active">Users</a>
+		<div class="who" th:if="${me}">
+			<div><strong th:text="'@' + ${me.username}">user</strong> <span class="muted" th:text="'· ' + ${@fmt.title(me.role)}">role</span></div>
+			<form method="post" th:action="@{/logout}"><button class="text small" type="submit">Sign out</button></form>
+		</div>
+	</nav>
+	<main class="content">
+		<div class="flash" role="status" th:if="${notice}" th:text="${notice}"></div>
+		<div class="flash error" role="alert" th:if="${error}" th:text="${error}"></div>
+		<th:block th:insert="${content}"></th:block>
+	</main>
+</div>
+</body>
+</html>
