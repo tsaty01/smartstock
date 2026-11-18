@@ -34,9 +34,9 @@ dependencies {
 	testImplementation(libs.spring.boot.starter.security.test)
 	testImplementation(libs.spring.boot.starter.validation.test)
 	testImplementation(libs.spring.boot.starter.webmvc.test)
-	testImplementation(libs.spring.boot.testcontainers)
-	testImplementation(libs.testcontainers.junit.jupiter)
-	testImplementation(libs.testcontainers.postgresql)
+	// Tests run a real PostgreSQL 18 from bundled binaries, without Docker.
+	testImplementation(libs.embedded.postgres)
+	testImplementation(platform(libs.postgres.binaries.bom))
 	testRuntimeOnly(libs.junit.platform.launcher)
 	mockitoAgent(platform(libs.spring.boot.bom))
 	mockitoAgent(libs.mockito.core) { isTransitive = false }

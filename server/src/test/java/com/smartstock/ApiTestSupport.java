@@ -26,7 +26,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 /** Integration tests against PostgreSQL with the demo accounts (password "smartstock"). */
-@Import(TestcontainersConfiguration.class)
+@Import(EmbeddedPostgresConfiguration.class)
 @SpringBootTest(properties = "smartstock.security.token-secret=test-only-token-secret-0123456789abcdef")
 @AutoConfigureMockMvc
 @ActiveProfiles("demo")
