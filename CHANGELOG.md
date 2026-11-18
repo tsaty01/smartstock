@@ -1,3 +1,9 @@
+## [1.0.0-dev.3](https://github.com/tsaty01/[secure]/compare/v1.0.0-dev.2...v1.0.0-dev.3) (2026-11-18)
+
+### Features
+
+* **android:** add Compose app with role-aware catalog, till, orders and reports ([afd3e80](https://github.com/tsaty01/[secure]/commit/afd3e80faf93016531e693de8f5b946c0a103aba))
+
 ## [1.0.0-dev.2](https://github.com/tsaty01/smartstock/compare/v1.0.0-dev.1...v1.0.0-dev.2) (2026-11-18)
 
 ### Features
