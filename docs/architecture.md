@@ -44,13 +44,13 @@ Feature reference and known pitfalls: [reference-audit.md](reference-audit.md).
 - [x] Flyway schema: categories, users, products, orders, order items, stock movements, discount rules, notifications
 - [x] Demo data (`demo` profile): synthetic users, hashed passwords
 - [x] API security: bearer tokens, role checks per endpoint, per-object ownership checks
-- [ ] Browser security: session + CSRF (with the website)
+- [x] Browser security: session sign-in with CSRF on every form; the user is reloaded per request, so disabling an account ends its session
 - [x] Catalog: categories, products (full replacement, stock only via movements), search/filter, images
 - [x] Inventory: transactional restock and adjustment with stock movements; low-stock and expiry alerts in services
 - [x] Billing: transactional checkout with row locks, merged duplicate lines, validated discounts, configurable tax stored per order, quotes
 - [x] Orders and receipts with ownership checks
 - [x] Reports: daily summary, monthly sales, product and category performance, clearance, expiry
 - [x] Users: admin management, cashier customer lookup and in-place customer registration
-- [x] Integration and concurrency tests (Testcontainers PostgreSQL)
-- [ ] Thymeleaf website
+- [x] Integration and concurrency tests (embedded PostgreSQL 18)
+- [x] Thymeleaf website: role-aware pages for dashboard, products, categories, till, orders and receipts, alerts, reports, offers and users, calling the same services as the API
 - [x] Android app: role-aware Compose screens, encrypted session, server-priced till, signed release APKs

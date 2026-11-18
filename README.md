@@ -32,8 +32,13 @@ With `SPRING_PROFILES_ACTIVE=demo`, sample data is loaded: products, discount ru
 | `APP_PORT` | `8080` | Host port for the application |
 | `TOKEN_SECRET` | required | API token signing key, at least 32 characters |
 | `SPRING_PROFILES_ACTIVE` | empty | `demo` loads sample data |
+| `COOKIE_SECURE` | `false` | `true` marks the website session cookie Secure (use behind HTTPS) |
 
 Product images are stored in the `app-data` volume, the database in `db-data`.
+
+## Website
+
+Open http://localhost:8080 and sign in. Each role lands on its own page: management on the dashboard, cashiers on the till, customers on their purchases. New customers can register at `/register`. Set `COOKIE_SECURE=true` when the site is served over HTTPS.
 
 ## Android app
 
@@ -50,7 +55,7 @@ Screens by role: management gets Dashboard, Products (add, edit, restock, adjust
 
 ## Develop
 
-Requires JDK 21. Server tests need Docker (Testcontainers); the Android build needs the Android SDK (`ANDROID_HOME`).
+Requires JDK 21. Server tests start their own embedded PostgreSQL, so they need no Docker; the Android build needs the Android SDK (`ANDROID_HOME`).
 
 ```sh
 docker compose up -d db

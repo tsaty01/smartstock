@@ -81,7 +81,7 @@ flowchart TD
 | Schema migrations | **Flyway** | Versioned, reproducible SQL |
 | Authentication and authorization | **Spring Security** | Roles enforced on the server |
 | Build | **Gradle** | Separate Android and backend builds within one repo |
-| Backend tests | **JUnit 5 + Mockito + integration tests** | Prefer Testcontainers/PostgreSQL for DB behavior |
+| Backend tests | **JUnit 5 + Mockito + integration tests** | Integration tests run against a real embedded PostgreSQL, no Docker needed |
 | Deployment | **Docker Compose** | Spring Boot + PostgreSQL + persistent storage |
 | Typography | **Inter Variable + Source Serif 4 Variable** | Same roles across Android and web |
 | Theme | **Material 3 Expressive-inspired** | Native M3E on Android; custom consistent web components |
@@ -188,10 +188,11 @@ Scope reference: `docs/reference-audit.md` (domain model, behaviors worth matchi
 - Keep dashboards, table-heavy screens, and checkout flows **functional rather than overly decorative**.
 - Respect reduced-motion preferences where practical.
 
-### Color palette — pending selection
+### Color palette — Deep Teal, Cream, Orange
 
-- **Do not finalize or invent brand hex values yet.** Select the palette from the Instagram reel supplied for the project: https://www.instagram.com/reel/DfuhfgpRQxa/ . The reel's actual colors still need to be supplied/verified via screenshots or video.
-- Once selected, define semantic tokens for `primary`, `onPrimary`, `secondary`, `background`, `surface`, `onSurface`, `outline`, `error`, `success`, `warning`, and stock-status indicators.
+- Chosen from the reel supplied for the project (https://www.instagram.com/reel/DfuhfgpRQxa/), whose swatches name the hex values: **Deep Teal `#013230`**, **Cream `#F3EBDD`**, **Orange `#FF6A1F`**. The reel's other sets (Glacier Blue/Navy/Lemon, Cream/Ink/Orchid Pink) were not chosen: teal and cream read as calm and trustworthy for stock and money, and orange is kept for the one action that matters most, charging a sale.
+- Light theme: Deep Teal `primary` on a Cream `background`/`surface`; Orange as the accent (`tertiaryContainer`) with dark text, since white on Orange fails contrast. Dark theme: teal-black surfaces, light teal `primary`, Cream text, the same Orange accent.
+- Stock-status colours (ok, warning, danger) are separate semantic tokens so they keep their meaning in both themes.
 - Support **light and dark themes** with accessible contrast. Optional Android dynamic color must not destroy SmartStock's brand/status semantics.
 - Store theme values centrally (Compose theme + CSS custom properties), not duplicated as arbitrary colors throughout screens.
 
@@ -262,9 +263,9 @@ SmartStock/
 
 ### Phase 2 — Java website
 
-- [ ] Implement Thymeleaf layouts, role-specific pages, forms, dashboards, and POS.
-- [ ] Reuse shared Java services, not separate business implementations.
-- [ ] Verify browser login, product workflows, sales, receipts, and reports.
+- [x] Implement Thymeleaf layouts, role-specific pages, forms, dashboards, and POS.
+- [x] Reuse shared Java services, not separate business implementations.
+- [x] Verify browser login, product workflows, sales, receipts, and reports.
 
 **Gate:** Full critical browser demo works with the Java backend and PostgreSQL.
 
@@ -273,13 +274,13 @@ SmartStock/
 - [x] Implement theme, fonts, navigation, authentication, and networking.
 - [x] Implement role-aware Compose screens for the essential workflows.
 - [x] Handle loading/empty/error cases and mobile accessibility.
-- [ ] Validate Android actions against the web client and database.
+- [x] Validate Android actions against the web client and database.
 
 **Gate:** Entire primary demo can be executed in the Android app.
 
 ### Phase 4 — Refinement, tests and deployment
 
-- [ ] Finalize selected color palette and light/dark themes.
+- [x] Finalize selected color palette and light/dark themes.
 - [ ] Add targeted enhancements only after the core scope is complete.
 - [ ] Run unit, integration, Android UI, and cross-client acceptance tests.
 - [ ] Produce production-like Docker deployment, backups, documentation, and a local fallback.
@@ -330,7 +331,7 @@ A release is considered **course-demo ready** only when all the following are tr
 | Appwrite dependency | **Excluded** |
 | KMP | **Excluded** |
 | Core fonts: Inter Variable + Source Serif 4 Variable | **Chosen** |
-| Brand color hex values from the Instagram reel | **Pending verified palette** |
+| Brand color hex values from the Instagram reel | Deep Teal `#013230`, Cream `#F3EBDD`, Orange `#FF6A1F` |
 | Exact Spring Boot / Compose / dependency versions | Choose compatible stable versions during bootstrap |
 | API authentication for Android | **Chosen:** HS256 JWT bearer tokens via Spring Security resource server; account reloaded per request |
 | Optional enhancements (barcode scan, notifications, advanced exports) | After core scope |
