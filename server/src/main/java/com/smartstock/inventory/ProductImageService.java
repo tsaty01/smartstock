@@ -13,6 +13,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.smartstock.common.ApiException;
@@ -41,13 +43,26 @@ public class ProductImageService {
 			file.transferTo(directory.resolve(name));
 		}
 		catch (IOException ex) {
+			delete(name);
 			throw new UncheckedIOException("Could not store product image", ex);
 		}
 		String previous = product.getImageName();
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+			@Override
+			public void afterCommit() {
+				if (previous != null) {
+					delete(previous);
+				}
+			}
+
+			@Override
+			public void afterCompletion(int status) {
+				if (status != STATUS_COMMITTED) {
+					delete(name);
+				}
+			}
+		});
 		product.setImageName(name);
-		if (previous != null) {
-			delete(previous);
-		}
 	}
 
 	@Transactional(readOnly = true)
