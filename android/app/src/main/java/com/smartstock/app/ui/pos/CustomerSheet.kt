@@ -60,7 +60,7 @@ private fun FindCustomer(vm: PosViewModel, onPick: (User) -> Unit, onRegister: (
 	var results by remember { mutableStateOf<List<User>>(emptyList()) }
 	var error by remember { mutableStateOf<String?>(null) }
 	LaunchedEffect(query) {
-		if (query.trim().length < 2) {
+		if (query.isBlank()) {
 			results = emptyList()
 			return@LaunchedEffect
 		}
@@ -90,7 +90,7 @@ private fun FindCustomer(vm: PosViewModel, onPick: (User) -> Unit, onRegister: (
 			)
 		}
 	}
-	if (query.trim().length >= 2 && results.isEmpty() && error == null) {
+	if (query.isNotBlank() && results.isEmpty() && error == null) {
 		Text("No matching customer", color = MaterialTheme.colorScheme.onSurfaceVariant)
 	}
 	TextButton(onClick = onRegister) {
