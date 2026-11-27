@@ -1,3 +1,20 @@
+## [1.0.0-dev.5](https://github.com/tsaty01/[secure]/compare/v1.0.0-dev.4...v1.0.0-dev.5) (2026-11-27)
+
+### Features
+
+* **android:** adopt forest paper theme and brand icon ([8ffcafa](https://github.com/tsaty01/[secure]/commit/8ffcafa8abd88f94cd23eb2e55173595b49763aa))
+* **android:** refine navigation and offline screen states ([2e9c84b](https://github.com/tsaty01/[secure]/commit/2e9c84b0797c4013045a5de54e99bef697d7a14e))
+* **server:** seed demo sales and stock alerts ([1c66f9f](https://github.com/tsaty01/[secure]/commit/1c66f9f0a833e7babdb1297ae25df4b845852fd9))
+
+### Bug Fixes
+
+* **android:** bind sessions to their server origin ([9934e9a](https://github.com/tsaty01/[secure]/commit/9934e9a031a03b57403680cffaa7d8b3ee72b020))
+* **server:** preserve product images across failed transactions ([3aa771e](https://github.com/tsaty01/[secure]/commit/3aa771ef861f03f7ca489892491344ea1a3dde24))
+
+### Refactoring
+
+* **server:** remove server-rendered website ([a0f530b](https://github.com/tsaty01/[secure]/commit/a0f530bc5d9a07fa59e385585093eaf5ff15f2f0))
+
 ## [1.0.0-dev.4](https://github.com/tsaty01/[secure]/compare/v1.0.0-dev.3...v1.0.0-dev.4) (2026-11-18)
 
 ### Features
