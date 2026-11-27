@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 
-data class Session(val token: String, val user: User)
+data class Session(val token: String, val user: User, val serverUrl: String)
 
 private val Context.dataStore by preferencesDataStore("session")
 
@@ -30,16 +30,24 @@ class SessionStore(private val context: Context, private val json: Json, private
 
 	val session: Flow<Session?> = context.dataStore.data.map { prefs ->
 		prefs[SESSION]?.let { sealed -> runCatching { json.decodeFromString<StoredSession>(open(sealed)) }.getOrNull() }
-			?.let { Session(it.token, it.user) }
+			?.let { Session(it.token, it.user, it.serverUrl.ifEmpty { prefs[SERVER_URL] ?: defaultServerUrl }) }
 	}
 
 	suspend fun setServerUrl(url: String) {
-		context.dataStore.edit { it[SERVER_URL] = url.trim().trimEnd('/') }
+		val normalized = url.trim().trimEnd('/')
+		context.dataStore.edit { prefs ->
+			if (normalized != (prefs[SERVER_URL] ?: defaultServerUrl)) {
+				prefs.remove(SESSION)
+			}
+			prefs[SERVER_URL] = normalized
+		}
 	}
 
 	suspend fun save(token: String, user: User) {
-		val sealed = seal(json.encodeToString(StoredSession.serializer(), StoredSession(token, user)))
-		context.dataStore.edit { it[SESSION] = sealed }
+		context.dataStore.edit { prefs ->
+			val origin = prefs[SERVER_URL] ?: defaultServerUrl
+			prefs[SESSION] = seal(json.encodeToString(StoredSession.serializer(), StoredSession(token, user, origin)))
+		}
 	}
 
 	suspend fun updateUser(user: User) {
@@ -81,7 +89,7 @@ class SessionStore(private val context: Context, private val json: Json, private
 	}
 
 	@kotlinx.serialization.Serializable
-	private data class StoredSession(val token: String, val user: User)
+	private data class StoredSession(val token: String, val user: User, val serverUrl: String = "")
 
 	private companion object {
 		val SERVER_URL = stringPreferencesKey("server_url")

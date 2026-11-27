@@ -46,7 +46,8 @@ class Backend(private val sessions: SessionStore, private val json: Json, privat
 			val request = chain.request()
 			val base = (serverUrl.value ?: runBlocking { sessions.serverUrl.first() }).toHttpUrl()
 			val url = request.url.newBuilder().scheme(base.scheme).host(base.host).port(base.port).build()
-			val token = (auth.value as? AuthState.SignedIn)?.session?.token
+			val session = (auth.value as? AuthState.SignedIn)?.session
+			val token = session?.takeIf { it.serverUrl.toHttpUrl() == base }?.token
 			val response = chain.proceed(
 				request.newBuilder().url(url).apply { token?.let { header("Authorization", "Bearer $it") } }.build(),
 			)
