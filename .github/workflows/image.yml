@@ -1,0 +1,25 @@
+name: image
+
+# Rebuilds and pushes the server image for an existing release tag, for when the release run failed after tagging.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Released version without the v prefix, for example 1.0.0
+        required: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: v${{ inputs.version }}
+      - uses: docker/setup-buildx-action@v4
+      - run: bash .github/scripts/publish-image.sh "${{ inputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
