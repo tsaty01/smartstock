@@ -1,0 +1,31 @@
+' Shared look for all diagrams: light fills, rounded shapes, no shadows.
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam roundCorner 10
+skinparam ArrowColor #555555
+skinparam ArrowFontColor #333333
+skinparam ArrowFontSize 11
+skinparam classAttributeIconSize 0
+skinparam ClassBackgroundColor #ECECFF
+skinparam ClassBorderColor #9370DB
+skinparam ClassHeaderBackgroundColor #DCDCFA
+skinparam StereotypeFontColor #555555
+skinparam EntityBackgroundColor #ECECFF
+skinparam EntityBorderColor #9370DB
+skinparam UsecaseBackgroundColor #ECECFF
+skinparam UsecaseBorderColor #9370DB
+skinparam ActorBackgroundColor #ECECFF
+skinparam ActorBorderColor #555555
+skinparam RectangleBackgroundColor #FBFBF2
+skinparam RectangleBorderColor #AAAA33
+skinparam ActivityBackgroundColor #ECECFF
+skinparam ActivityBorderColor #9370DB
+skinparam ActivityDiamondBackgroundColor #FFFFDE
+skinparam ActivityDiamondBorderColor #AAAA33
+skinparam ActivityStartColor #333333
+skinparam ActivityEndColor #333333
+skinparam SwimlaneBorderColor #9370DB
+skinparam SwimlaneTitleFontSize 14
+skinparam NoteBackgroundColor #FFF5AD
+skinparam NoteBorderColor #AAAA33

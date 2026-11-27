@@ -1,0 +1,49 @@
+@startuml use-cases
+!include style.iuml
+left to right direction
+
+actor Visitor
+actor "Signed-in user" as User
+actor Customer
+actor Cashier
+actor Manager
+actor Admin
+
+User <|-- Customer
+User <|-- Cashier
+Cashier <|-- Manager
+Manager <|-- Admin
+
+rectangle SmartStock {
+	usecase "Register as a customer" as Register
+	usecase "Sign in" as SignIn
+	usecase "Browse the catalog" as Browse
+	usecase "View receipts" as Receipts
+	usecase "Complete a sale" as Sell
+	usecase "Price the cart" as Quote
+	usecase "Find or register\na customer" as FindCustomer
+	usecase "Apply a manual discount" as ManualDiscount
+	usecase "Manage products\nand categories" as Catalog
+	usecase "Restock and adjust stock" as Stock
+	usecase "Manage discount rules" as Rules
+	usecase "Review stock alerts" as Alerts
+	usecase "View sales reports" as Reports
+	usecase "Manage user accounts" as Accounts
+}
+
+Visitor -- Register
+User -- SignIn
+User -- Browse
+User -- Receipts
+Cashier -- Sell
+Sell ..> Quote : <<include>>
+Sell ..> FindCustomer : <<include>>
+Sell <.. ManualDiscount : <<extend>>
+Manager -- ManualDiscount
+Manager -- Catalog
+Manager -- Stock
+Manager -- Rules
+Manager -- Alerts
+Manager -- Reports
+Accounts -- Admin
+@enduml

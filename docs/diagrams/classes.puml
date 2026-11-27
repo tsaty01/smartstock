@@ -1,0 +1,92 @@
+@startuml classes
+!include style.iuml
+hide circle
+hide empty members
+
+class BillingController {
+	+quote(request : QuoteRequest, user : CurrentUser) : QuoteView
+	+checkout(request : CheckoutRequest, user : CurrentUser) : ReceiptView
+	+receipt(id : long, user : CurrentUser) : ReceiptView
+}
+class OrderService {
+	+quote(request : QuoteRequest, actor : CurrentUser) : QuoteView
+	+checkout(request : CheckoutRequest, actor : CurrentUser) : ReceiptView
+	+receipt(id : long, actor : CurrentUser) : ReceiptView
+}
+class BillCalculator {
+	-taxRate : BigDecimal
+	+price(products : List<Product>, quantities : Map<Long, Integer>, discount : BigDecimal) : Bill
+}
+class ProductService {
+	+lockForSale(ids : List<Long>) : List<Product>
+	+recordSale(product : Product, quantity : int, orderId : long, actor : CurrentUser)
+}
+class User {
+	-id : Long
+	-username : String
+	-fullName : String
+	-active : boolean
+}
+enum Role <<enumeration>> {
+	ADMIN
+	MANAGER
+	CASHIER
+	CUSTOMER
+}
+class Category {
+	-id : Long
+	-name : String
+}
+class Product {
+	-id : Long
+	-name : String
+	-barcode : String
+	-price : BigDecimal
+	-stock : int
+	-reorderLevel : int
+	-expiryDate : LocalDate
+	-active : boolean
+}
+class Order {
+	-id : Long
+	-paymentMode : PaymentMode
+	-subtotal : BigDecimal
+	-discount : BigDecimal
+	-taxRate : BigDecimal
+	-tax : BigDecimal
+	-total : BigDecimal
+}
+class OrderItem {
+	-productName : String
+	-quantity : int
+	-unitPrice : BigDecimal
+	-lineTotal : BigDecimal
+}
+class StockMovement {
+	-change : int
+	-reason : Reason
+	-orderId : Long
+	-notes : String
+}
+class DiscountRule {
+	-minQuantity : int
+	-minAmount : BigDecimal
+	-percent : BigDecimal
+	-active : boolean
+}
+
+BillingController --> "1" OrderService : -orders
+OrderService --> "1" BillCalculator : -calculator
+OrderService --> "1" ProductService : -productService
+BillCalculator ..> DiscountRule : <<use>>
+ProductService ..> StockMovement : <<create>>
+OrderService ..> Order : <<create>>
+User --> "1" Role : -role
+Product "0..*" --> "1" Category : -category
+Order "1" *-- "1..*" OrderItem : -items
+OrderItem "0..*" --> "1" Product : -product
+Order "0..*" --> "1" User : -customer
+Order "0..*" --> "1" User : -cashier
+StockMovement "0..*" --> "1" Product : -product
+StockMovement "0..*" --> "1" User : -performedBy
+@enduml
