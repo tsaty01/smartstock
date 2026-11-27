@@ -3,6 +3,7 @@ package com.smartstock.app.ui.pos
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +23,6 @@ import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material.icons.outlined.PersonSearch
 import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -95,11 +95,11 @@ fun PosScreen(user: User, nav: NavController, modifier: Modifier = Modifier) {
 		},
 		snackbarHost = { SnackbarHost(snackbar) },
 	) { padding ->
-		Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding(), bottom = 104.dp)) {
+		Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
 			OutlinedTextField(
 				query, { query = it },
 				Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-				placeholder = { Text("Search or scan a barcode") },
+				placeholder = { Text("Search by name or barcode") },
 				leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
 				singleLine = true,
 				shape = RoundedCornerShape(28.dp),
@@ -125,29 +125,40 @@ fun PosScreen(user: User, nav: NavController, modifier: Modifier = Modifier) {
 					)
 				}
 			}
+			val showSummary = query.isBlank() && vm.cart.isNotEmpty()
 			Column(Modifier.weight(1f)) {
-				if (query.isNotBlank()) {
-					LoadableContent(vm.products, onRetry = vm::loadProducts) { products ->
-						val needle = query.trim().lowercase()
-						val matches = products.filter { it.name.lowercase().contains(needle) || it.barcode == query.trim() }
+				LoadableContent(vm.products, onRetry = vm::loadProducts) { products ->
+					val needle = query.trim().lowercase()
+					val matches = if (needle.isEmpty()) products else products.filter {
+						it.name.lowercase().contains(needle) || it.barcode == query.trim()
+					}
+					// With an empty cart the list scrolls under the floating dock; otherwise the summary clears it.
+					LazyColumn(contentPadding = PaddingValues(bottom = if (showSummary) 8.dp else 112.dp)) {
+						if (query.isBlank() && vm.cart.isNotEmpty()) {
+							item { Text("In this sale", Modifier.padding(16.dp), style = MaterialTheme.typography.titleMedium) }
+							items(vm.cart.keys.toList(), key = { "cart-$it" }) { id -> CartLine(vm, id) }
+						}
+						item {
+							Text(
+								if (needle.isEmpty()) "Products" else "Search results",
+								Modifier.padding(16.dp),
+								style = MaterialTheme.typography.titleMedium,
+							)
+						}
 						if (matches.isEmpty()) {
-							MessageBox(message = "No sellable products match")
+							item { MessageBox(message = if (needle.isEmpty()) "No sellable products" else "No sellable products match") }
 						} else {
-							LazyColumn {
-								items(matches, key = { it.id }) { product ->
-									ProductRow(product, showStock = true) {
-										vm.add(product)
-										query = ""
-									}
+							items(matches, key = { "product-${it.id}" }) { product ->
+								ProductRow(product, showStock = true) {
+									vm.add(product)
+									query = ""
 								}
 							}
 						}
 					}
-				} else {
-					Cart(vm)
 				}
 			}
-			if (query.isBlank()) {
+			if (showSummary) {
 				Summary(vm, user, onCheckout = { vm.checkout { id -> nav.navigate(ReceiptRoute(id)) } })
 			}
 		}
@@ -159,41 +170,33 @@ fun PosScreen(user: User, nav: NavController, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun Cart(vm: PosViewModel) {
-	if (vm.cart.isEmpty()) {
-		MessageBox(Icons.Outlined.ShoppingCart, "Search or scan products to add them to the sale")
-		return
-	}
-	val lines = vm.quote?.items?.associateBy { it.productId }
-	LazyColumn {
-		items(vm.cart.keys.toList(), key = { it }) { id ->
-			val quantity = vm.cart[id] ?: 0
-			val product = vm.product(id)
-			ListItem(
-				content = { Text(lines?.get(id)?.productName ?: product?.name ?: "Product #$id") },
-				supportingContent = {
-					val price = lines?.get(id)?.unitPrice ?: product?.price
-					price?.let { Text("${money(it)} each") }
-				},
-				trailingContent = {
-					Row(verticalAlignment = Alignment.CenterVertically) {
-						FilledTonalIconButton(onClick = { vm.setQuantity(id, quantity - 1) }) {
-							Icon(Icons.Outlined.Remove, "Remove one")
-						}
-						Text(
-							"$quantity",
-							Modifier.padding(horizontal = 8.dp),
-							style = MaterialTheme.typography.titleMedium.numeric,
-						)
-						FilledTonalIconButton(
-							onClick = { vm.setQuantity(id, quantity + 1) },
-							enabled = product == null || quantity < product.stock,
-						) { Icon(Icons.Outlined.Add, "Add one") }
-					}
-				},
-			)
-		}
-	}
+private fun CartLine(vm: PosViewModel, id: Long) {
+	val quantity = vm.cart[id] ?: 0
+	val product = vm.product(id)
+	val line = vm.quote?.items?.firstOrNull { it.productId == id }
+	ListItem(
+		content = { Text(line?.productName ?: product?.name ?: "Product #$id") },
+		supportingContent = {
+			val price = line?.unitPrice ?: product?.price
+			price?.let { Text("${money(it)} each") }
+		},
+		trailingContent = {
+			Row(verticalAlignment = Alignment.CenterVertically) {
+				FilledTonalIconButton(onClick = { vm.setQuantity(id, quantity - 1) }) {
+					Icon(Icons.Outlined.Remove, "Remove one")
+				}
+				Text(
+					"$quantity",
+					Modifier.padding(horizontal = 8.dp),
+					style = MaterialTheme.typography.titleMedium.numeric,
+				)
+				FilledTonalIconButton(
+					onClick = { vm.setQuantity(id, quantity + 1) },
+					enabled = product == null || quantity < product.stock,
+				) { Icon(Icons.Outlined.Add, "Add one") }
+			}
+		},
+	)
 }
 
 @Composable
@@ -201,7 +204,7 @@ private fun Summary(vm: PosViewModel, user: User, onCheckout: () -> Unit) {
 	if (vm.cart.isEmpty()) return
 	var editingDiscount by rememberSaveable { mutableStateOf(false) }
 	Surface(
-		Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+		Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 104.dp),
 		shape = RoundedCornerShape(20.dp),
 		color = MaterialTheme.colorScheme.surfaceContainerLow,
 		border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
