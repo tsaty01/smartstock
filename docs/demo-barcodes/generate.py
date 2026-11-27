@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from barcode import Code128
-from barcode.writer import ImageWriter, SVGWriter
+from barcode.writer import ImageWriter
 from PIL import Image, ImageDraw, ImageFont
 
 HERE = Path(__file__).parent
@@ -31,7 +31,7 @@ PRODUCTS = {
 OPTIONS = {'module_height': 12, 'quiet_zone': 4, 'font_size': 8, 'text_distance': 4}
 
 for code in PRODUCTS:
-    Code128(code, writer=SVGWriter()).save(str(HERE / code), OPTIONS)
+    Code128(code, writer=ImageWriter()).save(str(HERE / code), {**OPTIONS, 'dpi': 300, 'font_size': 10})
 
 columns, cell_w, cell_h = 2, 620, 300
 rows = (len(PRODUCTS) + columns - 1) // columns
