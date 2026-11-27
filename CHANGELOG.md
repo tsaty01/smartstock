@@ -1,3 +1,18 @@
+## [1.0.0-dev.6](https://github.com/tsaty01/[secure]/compare/v1.0.0-dev.5...v1.0.0-dev.6) (2026-11-27)
+
+### Features
+
+* **android:** list sellable products on Sell before searching ([34c03d3](https://github.com/tsaty01/[secure]/commit/34c03d349b64cc316d5e8dcabf870ff1ba244910))
+* **android:** scan barcodes with the camera in Sell, Products and the editor ([9e221bc](https://github.com/tsaty01/[secure]/commit/9e221bc3583afc902fc371a947005c5022be48c1))
+* **server:** attach bundled photos to seeded demo products ([e1d9707](https://github.com/tsaty01/[secure]/commit/e1d9707932129d2a348906b1e6270ee8f1b1230b))
+
+### Bug Fixes
+
+* **android:** ellipsize long product labels ([5a6f139](https://github.com/tsaty01/[secure]/commit/5a6f139105967d5650d42b070da81dd5993dced1))
+* **android:** keep the Add product button above the dock as it hides ([77f65c3](https://github.com/tsaty01/[secure]/commit/77f65c3ecf69c52c2235f8431370e48e98516b41))
+* **android:** search customers from the first letter ([bd36afb](https://github.com/tsaty01/[secure]/commit/bd36afb1249327ebfd01695ef0aa891e98e286f1))
+* **server:** version product image URLs so replaced photos reload ([b132881](https://github.com/tsaty01/[secure]/commit/b132881232cd07dbc420f8afc249bb597700635f))
+
 ## [1.0.0-dev.5](https://github.com/tsaty01/[secure]/compare/v1.0.0-dev.4...v1.0.0-dev.5) (2026-11-27)
 
 ### Features
