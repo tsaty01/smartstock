@@ -34,7 +34,11 @@ WITH seed (category, name, barcode, price, stock, reorder_level, expiry_days, wa
         ('Snacks',        'Salted Chips 90 g',       '8900000000110',  30.00, 80, 20,  45, NULL),
         ('Snacks',        'Peanut Cookies 200 g',    '8900000000127',  55.00, 40, 15,  25, 'Allergen: Contains Nuts'),
         ('Dairy',         'Toned Milk 1 L',          '8900000000134',  56.00, 30, 20,   3, 'Refrigerate After Opening'),
-        ('Dairy',         'Paneer 200 g',            '8900000000141',  90.00, 12, 10,   6, 'Refrigerate After Opening')
+        ('Dairy',         'Paneer 200 g',            '8900000000141',  90.00, 12, 10,   6, 'Refrigerate After Opening'),
+        ('Groceries',     'Rolled Oats 1 kg',         '8900000000158', 240.00, 200, 20, 180, NULL),
+        ('Beverages',     'Cold Brew Coffee 250 ml', '8900000000165', 160.00, 200, 20,  45, NULL),
+        ('Snacks',        'Dark Chocolate 100 g',    '8900000000172', 120.00, 200, 20, 120, 'Allergen: Contains Milk'),
+        ('Personal Care', 'Hand Wash 500 ml',        '8900000000189', 180.00, 200, 20, 300, NULL)
 ),
 inserted AS (
     INSERT INTO products (category_id, name, barcode, price, stock, reorder_level, expiry_date, warning_label)
@@ -58,3 +62,122 @@ FROM (VALUES
     ('Mega basket (1000+)',     1, 1000, 15.00)
 ) AS r (name, min_quantity, min_amount, percent)
 WHERE NOT EXISTS (SELECT 1 FROM discount_rules d WHERE d.name = r.name);
+
+-- Named fixtures keep repeatable migrations from adding the same receipts twice.
+CREATE TABLE IF NOT EXISTS demo_seed_orders (
+    seed_key VARCHAR(32) PRIMARY KEY,
+    order_id BIGINT NOT NULL UNIQUE REFERENCES orders (id)
+);
+
+CREATE TEMP TABLE demo_sale_lines (
+    seed_key VARCHAR(32) NOT NULL,
+    barcode VARCHAR(50) NOT NULL,
+    quantity INTEGER NOT NULL
+) ON COMMIT DROP;
+
+INSERT INTO demo_sale_lines (seed_key, barcode, quantity) VALUES
+    ('demo-01', '8900000000158', 2), ('demo-01', '8900000000165', 2),
+    ('demo-02', '8900000000189', 2), ('demo-02', '8900000000172', 2),
+    ('demo-03', '8900000000158', 1), ('demo-03', '8900000000172', 2),
+    ('demo-04', '8900000000165', 1), ('demo-04', '8900000000172', 1),
+    ('demo-05', '8900000000189', 1), ('demo-05', '8900000000158', 1),
+    ('demo-06', '8900000000165', 3), ('demo-06', '8900000000172', 2),
+    ('demo-07', '8900000000158', 3), ('demo-07', '8900000000189', 2),
+    ('demo-08', '8900000000172', 3), ('demo-08', '8900000000165', 1),
+    ('demo-09', '8900000000158', 2), ('demo-09', '8900000000189', 1),
+    ('demo-10', '8900000000189', 2), ('demo-10', '8900000000172', 1),
+    ('demo-11', '8900000000165', 2), ('demo-11', '8900000000158', 1);
+
+DO $$
+DECLARE
+    sale RECORD;
+    sale_id BIGINT;
+    subtotal NUMERIC(12, 2);
+    discount NUMERIC(12, 2);
+    tax NUMERIC(12, 2);
+    units INTEGER;
+BEGIN
+    FOR sale IN
+        SELECT * FROM (VALUES
+            ('demo-01',   0,  1, 'customer',  'cashier',  'UPI'),
+            ('demo-02',   0,  2, 'customer2', 'cashier2', 'CARD'),
+            ('demo-03',   0,  3, 'customer',  'cashier',  'CASH'),
+            ('demo-04',   1,  4, 'customer2', 'cashier',  'CASH'),
+            ('demo-05',   7,  5, 'customer',  'cashier2', 'UPI'),
+            ('demo-06',  20,  6, 'customer2', 'cashier',  'CARD'),
+            ('demo-07',  40,  7, 'customer',  'cashier2', 'CASH'),
+            ('demo-08',  70,  8, 'customer2', 'cashier',  'UPI'),
+            ('demo-09', 100,  9, 'customer',  'cashier2', 'CARD'),
+            ('demo-10', 130, 10, 'customer2', 'cashier',  'CASH'),
+            ('demo-11', 160, 11, 'customer',  'cashier2', 'UPI')
+        ) AS s(seed_key, age_days, ordinal, customer, cashier, payment)
+    LOOP
+        IF EXISTS (SELECT 1 FROM demo_seed_orders WHERE seed_key = sale.seed_key) THEN
+            CONTINUE;
+        END IF;
+
+        IF EXISTS (
+            SELECT 1 FROM demo_sale_lines l
+            LEFT JOIN products p ON p.barcode = l.barcode
+            WHERE l.seed_key = sale.seed_key AND (p.id IS NULL OR p.stock < l.quantity)
+        ) THEN
+            RAISE EXCEPTION 'Demo products unavailable for %', sale.seed_key;
+        END IF;
+
+        SELECT sum(p.price * l.quantity), sum(l.quantity)
+        INTO subtotal, units
+        FROM demo_sale_lines l JOIN products p ON p.barcode = l.barcode
+        WHERE l.seed_key = sale.seed_key;
+        IF subtotal IS NULL THEN
+            RAISE EXCEPTION 'Missing demo sale lines for %', sale.seed_key;
+        END IF;
+
+        discount := round(subtotal * CASE
+            WHEN subtotal >= 1000 THEN 0.15
+            WHEN subtotal >= 500 THEN 0.10
+            WHEN units >= 10 THEN 0.05
+            ELSE 0
+        END, 2);
+        tax := round((subtotal - discount) * 0.18, 2);
+
+        INSERT INTO orders (customer_id, cashier_id, payment_mode, subtotal, discount, tax_rate, tax, total, created_at)
+        VALUES (
+            (SELECT id FROM users WHERE username = sale.customer),
+            (SELECT id FROM users WHERE username = sale.cashier),
+            sale.payment, subtotal, discount, 18.00, tax, subtotal - discount + tax,
+            now() - make_interval(days => sale.age_days, secs => sale.ordinal)
+        ) RETURNING id INTO sale_id;
+
+        INSERT INTO demo_seed_orders (seed_key, order_id) VALUES (sale.seed_key, sale_id);
+
+        INSERT INTO order_items (order_id, product_id, product_name, quantity, unit_price, line_total)
+        SELECT sale_id, p.id, p.name, l.quantity, p.price, p.price * l.quantity
+        FROM demo_sale_lines l JOIN products p ON p.barcode = l.barcode
+        WHERE l.seed_key = sale.seed_key;
+
+        UPDATE products p SET stock = p.stock - i.quantity, version = p.version + 1, updated_at = now()
+        FROM (SELECT product_id, sum(quantity) AS quantity FROM order_items
+              WHERE order_id = sale_id GROUP BY product_id) i
+        WHERE p.id = i.product_id;
+
+        INSERT INTO stock_movements (product_id, change, reason, order_id, performed_by, notes, created_at)
+        SELECT i.product_id, -i.quantity, 'SALE', sale_id,
+               (SELECT id FROM users WHERE username = sale.cashier),
+               'Demo sale', o.created_at
+        FROM order_items i JOIN orders o ON o.id = i.order_id
+        WHERE i.order_id = sale_id;
+    END LOOP;
+END $$;
+
+INSERT INTO notifications (type, message, product_id)
+SELECT 'LOW_STOCK', 'Low stock: ' || p.name || ' (' || p.stock || ' remaining)', p.id
+FROM products p
+WHERE p.barcode IN ('8900000000035', '8900000000103') AND p.stock <= p.reorder_level
+  AND NOT EXISTS (SELECT 1 FROM notifications n WHERE n.type = 'LOW_STOCK' AND n.product_id = p.id);
+
+INSERT INTO notifications (type, message, product_id)
+SELECT 'EXPIRY', 'Check expiry: ' || p.name, p.id
+FROM products p
+WHERE p.barcode IN ('8900000000080', '8900000000134', '8900000000141')
+  AND p.expiry_date <= current_date + 30
+  AND NOT EXISTS (SELECT 1 FROM notifications n WHERE n.type = 'EXPIRY' AND n.product_id = p.id);

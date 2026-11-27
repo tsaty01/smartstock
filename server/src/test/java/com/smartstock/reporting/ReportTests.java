@@ -7,11 +7,34 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.smartstock.ApiTestSupport;
 
 class ReportTests extends ApiTestSupport {
+
+	@Autowired
+	JdbcClient jdbc;
+
+	@Test
+	void demoReceiptsHaveConsistentTotalsAndSaleMovements() throws Exception {
+		assertThat(jdbc.sql("select count(*) from demo_seed_orders").query(Long.class).single()).isEqualTo(11L);
+		long inconsistent = jdbc.sql("""
+				select count(*) from demo_seed_orders d join orders o on o.id = d.order_id
+				where o.subtotal <> (select sum(line_total) from order_items where order_id = o.id)
+				   or o.tax <> round((o.subtotal - o.discount) * o.tax_rate / 100, 2)
+				   or o.total <> o.subtotal - o.discount + o.tax
+				   or (select count(*) from stock_movements where order_id = o.id and reason = 'SALE')
+				      <> (select count(*) from order_items where order_id = o.id)""").query(Long.class).single();
+		assertThat(inconsistent).isZero();
+
+		get(login("manager"), "/api/reports/dashboard").andExpect(status().isOk())
+			.andExpect(jsonPath("$.today.orders").value(org.hamcrest.Matchers.greaterThanOrEqualTo(3)))
+			.andExpect(jsonPath("$.topProducts").isNotEmpty())
+			.andExpect(jsonPath("$.unreadNotifications").value(org.hamcrest.Matchers.greaterThanOrEqualTo(1)));
+	}
 
 	@Test
 	void dashboardReflectsTodaysSales() throws Exception {
