@@ -65,6 +65,7 @@ import com.smartstock.app.ui.LocalBackend
 import com.smartstock.app.ui.ReceiptRoute
 import com.smartstock.app.ui.components.LoadableContent
 import com.smartstock.app.ui.components.MessageBox
+import com.smartstock.app.ui.components.ScanButton
 import com.smartstock.app.ui.components.money
 import com.smartstock.app.ui.products.ProductRow
 import com.smartstock.app.ui.theme.numeric
@@ -101,6 +102,11 @@ fun PosScreen(user: User, nav: NavController, modifier: Modifier = Modifier) {
 				Modifier.fillMaxWidth().padding(horizontal = 16.dp),
 				placeholder = { Text("Search by name or barcode") },
 				leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+				trailingIcon = {
+					ScanButton(onError = { vm.message = it }) { code ->
+						if (!vm.addByBarcode(code)) vm.message = "No sellable product with barcode $code"
+					}
+				},
 				singleLine = true,
 				shape = RoundedCornerShape(28.dp),
 				keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),

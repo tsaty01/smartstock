@@ -53,6 +53,7 @@ import com.smartstock.app.data.ProductRequest
 import com.smartstock.app.ui.LocalBackend
 import com.smartstock.app.ui.components.Loadable
 import com.smartstock.app.ui.components.LoadableContent
+import com.smartstock.app.ui.components.ScanButton
 import com.smartstock.app.ui.components.formatDate
 import java.time.Instant
 import java.time.LocalDate
@@ -182,7 +183,12 @@ fun ProductEditScreen(id: Long, onDone: () -> Unit) {
 				if (id == 0L) {
 					NumberField("Opening stock", form.initialStock, Modifier.fillMaxWidth()) { v -> update { copy(initialStock = v) } }
 				}
-				OutlinedTextField(form.barcode, { v -> update { copy(barcode = v) } }, Modifier.fillMaxWidth(), label = { Text("Barcode") }, singleLine = true)
+				OutlinedTextField(
+					form.barcode, { v -> update { copy(barcode = v) } }, Modifier.fillMaxWidth(),
+					label = { Text("Barcode") },
+					trailingIcon = { ScanButton { code -> update { copy(barcode = code) } } },
+					singleLine = true,
+				)
 				OutlinedTextField(
 					value = form.expiryDate?.let(::formatDate) ?: "No expiry",
 					onValueChange = {},

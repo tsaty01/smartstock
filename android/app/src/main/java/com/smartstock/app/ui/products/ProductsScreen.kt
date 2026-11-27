@@ -55,6 +55,7 @@ import com.smartstock.app.ui.ProductRoute
 import com.smartstock.app.ui.components.Loadable
 import com.smartstock.app.ui.components.LoadableContent
 import com.smartstock.app.ui.components.MessageBox
+import com.smartstock.app.ui.components.ScanButton
 import com.smartstock.app.ui.components.StockPill
 import com.smartstock.app.ui.components.money
 import com.smartstock.app.ui.theme.numeric
@@ -118,6 +119,7 @@ fun ProductsScreen(user: User, nav: NavController, modifier: Modifier = Modifier
 				Modifier.fillMaxWidth().padding(horizontal = 16.dp),
 				placeholder = { Text("Search by name or barcode") },
 				leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+				trailingIcon = { ScanButton { query = it } },
 				singleLine = true,
 				shape = RoundedCornerShape(28.dp),
 			)
