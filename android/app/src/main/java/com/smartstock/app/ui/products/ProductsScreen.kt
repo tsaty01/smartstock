@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -182,6 +183,7 @@ fun ProductRow(product: Product, showStock: Boolean, onClick: () -> Unit) {
 			Text(
 				listOfNotNull(product.categoryName, product.warningLabel).joinToString(" · "),
 				maxLines = 1,
+				overflow = TextOverflow.Ellipsis,
 			)
 		},
 		trailingContent = {
