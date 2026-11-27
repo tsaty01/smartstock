@@ -147,6 +147,13 @@ class InventoryTests extends ApiTestSupport {
 	}
 
 	@Test
+	void seededDemoProductsCarryBundledPhotos() throws Exception {
+		List<String> urls = read(get(manager, "/api/products?includeInactive=true"), "$[?(@.barcode == '8900000000035')].imageUrl");
+		assertThat(urls).singleElement().asString().startsWith("/api/products/");
+		get(manager, urls.getFirst()).andExpect(status().isOk()).andExpect(content().contentType(MediaType.IMAGE_JPEG));
+	}
+
+	@Test
 	void productImagesAreStoredAndServedByContentType() throws Exception {
 		long product = createProduct(manager, "10.00", 1);
 		mvc.perform(multipart(HttpMethod.PUT, "/api/products/" + product + "/image")

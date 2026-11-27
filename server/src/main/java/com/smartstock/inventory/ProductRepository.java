@@ -35,6 +35,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
 	boolean existsByBarcode(String barcode);
 
+	Optional<Product> findByBarcode(String barcode);
+
 	boolean existsByBarcodeAndIdNot(String barcode, long id);
 
 }

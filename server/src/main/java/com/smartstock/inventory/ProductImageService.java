@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -35,12 +36,21 @@ public class ProductImageService {
 
 	@Transactional
 	public void store(long productId, MultipartFile file) {
-		Product product = products.findById(productId).orElseThrow(() -> ApiException.notFound("Product"));
-		ImageType type = ImageType.detect(file);
-		String name = "%d-%s.%s".formatted(productId, UUID.randomUUID(), type.extension);
-		try {
+		replace(products.findById(productId).orElseThrow(() -> ApiException.notFound("Product")), file);
+	}
+
+	/** Gives a product a bundled photo unless it already has one, so uploaded photos are never overwritten. */
+	@Transactional
+	public void storeIfMissing(String barcode, InputStreamSource image) {
+		products.findByBarcode(barcode).filter(p -> p.getImageName() == null).ifPresent(p -> replace(p, image));
+	}
+
+	private void replace(Product product, InputStreamSource source) {
+		ImageType type = ImageType.detect(source);
+		String name = "%d-%s.%s".formatted(product.getId(), UUID.randomUUID(), type.extension);
+		try (InputStream in = source.getInputStream()) {
 			Files.createDirectories(directory);
-			file.transferTo(directory.resolve(name));
+			Files.copy(in, directory.resolve(name));
 		}
 		catch (IOException ex) {
 			delete(name);
@@ -105,9 +115,9 @@ public class ProductImageService {
 			this.magic = magic;
 		}
 
-		static ImageType detect(MultipartFile file) {
+		static ImageType detect(InputStreamSource source) {
 			byte[] header = new byte[12];
-			try (InputStream in = file.getInputStream()) {
+			try (InputStream in = source.getInputStream()) {
 				in.readNBytes(header, 0, header.length);
 			}
 			catch (IOException ex) {
