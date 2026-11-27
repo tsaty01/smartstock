@@ -43,6 +43,7 @@ import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -93,6 +94,12 @@ private val DockPillWidth = 56.dp
 private val DockPillHeight = 40.dp
 private val DockTabGap = 4.dp
 
+/** Space the floating dock currently takes above the navigation bar; floating buttons sit above it. */
+val LocalDockInset = compositionLocalOf { 0.dp }
+
+// Dock height (48 dp tab + 2 × 6 dp padding) plus its 12 dp bottom margin.
+private val DockClearance = 72.dp
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(user: User, nav: NavController) {
@@ -123,7 +130,8 @@ fun HomeScreen(user: User, nav: NavController) {
 		}
 	}
 	LaunchedEffect(selected) { dockVisible = true }
-	CompositionLocalProvider(LocalContentColor provides colors.onSurface) {
+	val dockInset by animateDpAsState(if (dockVisible) DockClearance else 0.dp, label = "Dock inset")
+	CompositionLocalProvider(LocalContentColor provides colors.onSurface, LocalDockInset provides dockInset) {
 		Box(Modifier.fillMaxSize().nestedScroll(scrollConnection)) {
 			val content = Modifier.fillMaxSize()
 		when (selected) {

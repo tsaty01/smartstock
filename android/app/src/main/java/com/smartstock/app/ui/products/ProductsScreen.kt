@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -58,6 +59,7 @@ import com.smartstock.app.ui.components.MessageBox
 import com.smartstock.app.ui.components.ScanButton
 import com.smartstock.app.ui.components.StockPill
 import com.smartstock.app.ui.components.money
+import com.smartstock.app.ui.home.LocalDockInset
 import com.smartstock.app.ui.theme.numeric
 import kotlinx.coroutines.launch
 
@@ -163,7 +165,8 @@ fun ProductsScreen(user: User, nav: NavController, modifier: Modifier = Modifier
 				onClick = { nav.navigate(ProductEditRoute()) },
 				icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
 				text = { Text("Add product") },
-				modifier = Modifier.align(Alignment.BottomEnd).padding(end = 16.dp, bottom = 112.dp),
+				modifier = Modifier.align(Alignment.BottomEnd).navigationBarsPadding()
+					.padding(end = 16.dp, bottom = 16.dp + LocalDockInset.current),
 			)
 		}
 	}
