@@ -1,7 +1,6 @@
 package com.smartstock;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -14,8 +13,8 @@ class SmartstockServerApplicationTests extends ApiTestSupport {
 	}
 
 	@Test
-	void pagesRequireSignIn() throws Exception {
-		get(null, "/dashboard").andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/login"));
+	void requestsWithoutTokensCannotAccessTheApi() throws Exception {
+		get(null, "/api/products").andExpect(status().isUnauthorized());
 	}
 
 }

@@ -8,7 +8,6 @@ import javax.crypto.spec.SecretKeySpec;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,54 +21,27 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
-
-import com.smartstock.auth.UserRepository;
-
 import com.smartstock.common.SmartstockProperties;
 
 @Configuration(proxyBeanMethods = false)
 @EnableMethodSecurity
 class SecurityConfig {
 
-	/** Android and other API clients: stateless bearer tokens, so no CSRF exposure. */
+	/** Android API: stateless bearer authentication, with no browser session or CSRF. */
 	@Bean
-	@Order(1)
 	SecurityFilterChain apiSecurity(HttpSecurity http, UserJwtConverter converter) throws Exception {
-		return http.securityMatcher("/api/**")
+		return http
 			.authorizeHttpRequests(requests -> requests
+				.requestMatchers("/actuator/health/**", "/actuator/info", "/error").permitAll()
 				.requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
 				.anyRequest().authenticated())
 			.oauth2ResourceServer(server -> server.jwt(jwt -> jwt.jwtAuthenticationConverter(converter)))
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.formLogin(AbstractHttpConfigurer::disable)
+			.httpBasic(AbstractHttpConfigurer::disable)
 			.csrf(AbstractHttpConfigurer::disable)
 			.build();
-	}
-
-	/** Website: session sign-in with CSRF protection on every form. Role checks sit on the page controllers. */
-	@Bean
-	@Order(2)
-	SecurityFilterChain webSecurity(HttpSecurity http, UserRepository users) throws Exception {
-		return http
-			.authorizeHttpRequests(requests -> requests
-				.requestMatchers("/actuator/health/**", "/actuator/info", "/css/**", "/fonts/**", "/favicon.svg",
-						"/login", "/register", "/error")
-				.permitAll()
-				.anyRequest().authenticated())
-			.formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/", true))
-			.logout(logout -> logout.logoutSuccessUrl("/login?logout"))
-			.addFilterBefore(new SessionUserFilter(users), AuthorizationFilter.class)
-			.build();
-	}
-
-	@Bean
-	UserDetailsService userDetailsService(UserRepository users) {
-		return username -> users.findByUsernameIgnoreCase(username)
-			.map(Account::new)
-			.orElseThrow(() -> new UsernameNotFoundException("Unknown user"));
 	}
 
 	@Bean
