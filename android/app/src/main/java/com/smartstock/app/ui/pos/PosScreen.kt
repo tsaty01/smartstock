@@ -1,10 +1,13 @@
 package com.smartstock.app.ui.pos
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,7 +26,8 @@ import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +44,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -90,7 +95,7 @@ fun PosScreen(user: User, nav: NavController, modifier: Modifier = Modifier) {
 		},
 		snackbarHost = { SnackbarHost(snackbar) },
 	) { padding ->
-		Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
+		Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding(), bottom = 104.dp)) {
 			OutlinedTextField(
 				query, { query = it },
 				Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -194,7 +199,13 @@ private fun Cart(vm: PosViewModel) {
 @Composable
 private fun Summary(vm: PosViewModel, user: User, onCheckout: () -> Unit) {
 	if (vm.cart.isEmpty()) return
-	ElevatedCard(Modifier.fillMaxWidth().padding(12.dp), shape = RoundedCornerShape(28.dp)) {
+	var editingDiscount by rememberSaveable { mutableStateOf(false) }
+	Surface(
+		Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+		shape = RoundedCornerShape(20.dp),
+		color = MaterialTheme.colorScheme.surfaceContainerLow,
+		border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+	) {
 		Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
 			val q = vm.quote
 			if (q != null) {
@@ -203,6 +214,7 @@ private fun Summary(vm: PosViewModel, user: User, onCheckout: () -> Unit) {
 					Amount(if (q.discountSource == "RULE") "Discount (offer)" else "Discount", q.discount.negate())
 				}
 				Amount("GST ${q.taxRate.stripTrailingZeros().toPlainString()}%", q.tax)
+				HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 				Amount("Total", q.total, emphasis = true)
 			} else {
 				vm.quoteError?.let { Text(it, color = MaterialTheme.colorScheme.error) } ?: LoadingIndicator(Modifier.size(32.dp))
@@ -217,17 +229,26 @@ private fun Summary(vm: PosViewModel, user: User, onCheckout: () -> Unit) {
 				}
 			}
 			if (user.role.isManagement) {
-				OutlinedTextField(
-					vm.discount, vm::updateDiscount, Modifier.fillMaxWidth(),
-					label = { Text("Manual discount (₹)") },
-					supportingText = { Text("Leave empty to apply the best offer") },
-					singleLine = true,
-					keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-				)
+				TextButton(onClick = { editingDiscount = !editingDiscount }) {
+					Text(when {
+						editingDiscount -> "Hide manual discount"
+						vm.discount.isNotBlank() -> "Manual discount: ₹${vm.discount}"
+						else -> "Apply manual discount"
+					})
+				}
+				AnimatedVisibility(editingDiscount) {
+					OutlinedTextField(
+						vm.discount, vm::updateDiscount, Modifier.fillMaxWidth(),
+						label = { Text("Manual discount (₹)") },
+						supportingText = { Text("Leave empty to apply the best offer") },
+						singleLine = true,
+						keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+					)
+				}
 			}
 			Button(
 				onClick = onCheckout,
-				Modifier.fillMaxWidth(),
+				Modifier.fillMaxWidth().heightIn(min = 56.dp),
 				enabled = vm.customer != null && q != null && !vm.busy,
 				colors = ButtonDefaults.buttonColors(
 					containerColor = MaterialTheme.colorScheme.tertiaryContainer,

@@ -1,6 +1,7 @@
 package com.smartstock.app.ui.orders
 
 import android.content.Intent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,7 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Surface
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,7 +34,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.Alignment
+import com.smartstock.app.R
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -50,6 +56,9 @@ import com.smartstock.app.ui.components.LoadableContent
 import com.smartstock.app.ui.components.MessageBox
 import com.smartstock.app.ui.components.formatInstant
 import com.smartstock.app.ui.components.money
+import com.smartstock.app.ui.theme.Forest
+import com.smartstock.app.ui.theme.Paper
+import com.smartstock.app.ui.theme.billPage
 import com.smartstock.app.ui.theme.numeric
 import java.math.BigDecimal
 import kotlinx.coroutines.launch
@@ -111,7 +120,7 @@ fun OrdersScreen(user: User, nav: NavController, modifier: Modifier = Modifier) 
 				if (orders.isEmpty()) {
 					MessageBox(Icons.AutoMirrored.Outlined.ReceiptLong, if (user.role.isStaff) "No sales yet" else "No purchases yet")
 				} else {
-					LazyColumn(contentPadding = PaddingValues(bottom = 16.dp)) {
+					LazyColumn(contentPadding = PaddingValues(bottom = 112.dp)) {
 						items(orders, key = { it.id }) { order ->
 							ListItem(
 								onClick = { nav.navigate(ReceiptRoute(order.id)) },
@@ -119,7 +128,7 @@ fun OrdersScreen(user: User, nav: NavController, modifier: Modifier = Modifier) 
 									Text(if (user.role.isStaff) "#${order.id} · ${order.customerName}" else "Bill #${order.id}")
 								},
 								supportingContent = {
-									Text("${formatInstant(order.createdAt)} · ${order.itemCount} items · ${order.paymentMode.label}")
+									Text("${formatInstant(order.createdAt)} · ${order.itemCount} ${if (order.itemCount == 1) "item" else "items"} · ${order.paymentMode.label}")
 								},
 								trailingContent = { Text(money(order.total), style = MaterialTheme.typography.titleMedium.numeric) },
 							)
@@ -180,14 +189,25 @@ fun ReceiptScreen(id: Long, onBack: () -> Unit) {
 		LoadableContent(vm.state, onRetry = vm::load) { r ->
 			LazyColumn(Modifier.fillMaxSize().padding(padding), contentPadding = PaddingValues(16.dp)) {
 				item {
-					ElevatedCard(shape = RoundedCornerShape(28.dp)) {
-						Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-							Text("SmartStock", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.primary)
+					Surface(
+						shape = RoundedCornerShape(4.dp),
+						color = Paper,
+						contentColor = Forest,
+						shadowElevation = 2.dp,
+					) {
+						Column(
+							Modifier.fillMaxWidth().billPage().padding(start = 44.dp, end = 20.dp, top = 20.dp, bottom = 20.dp),
+							verticalArrangement = Arrangement.spacedBy(6.dp),
+						) {
+							Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+								Image(painterResource(R.drawable.brand_mark), contentDescription = null, modifier = Modifier.size(32.dp))
+								Text("SmartStock", style = MaterialTheme.typography.headlineSmall)
+							}
 							Text(formatInstant(r.createdAt), style = MaterialTheme.typography.bodyMedium)
 							Text("Customer: ${r.customerName}" + (r.customerPhone?.let { " · $it" } ?: ""))
 							Text("Cashier: ${r.cashierName}")
 							Text("Payment: ${r.paymentMode.label}")
-							HorizontalDivider(Modifier.padding(vertical = 8.dp))
+							HorizontalDivider(Modifier.padding(vertical = 8.dp), color = BillRule)
 							r.items.forEach { line ->
 								Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
 									Column(Modifier.weight(1f)) {
@@ -195,13 +215,13 @@ fun ReceiptScreen(id: Long, onBack: () -> Unit) {
 										Text(
 											"${line.quantity} × ${money(line.unitPrice)}",
 											style = MaterialTheme.typography.bodySmall.numeric,
-											color = MaterialTheme.colorScheme.onSurfaceVariant,
+											color = BillMuted,
 										)
 									}
 									Text(money(line.lineTotal), style = MaterialTheme.typography.bodyLarge.numeric)
 								}
 							}
-							HorizontalDivider(Modifier.padding(vertical = 8.dp))
+							HorizontalDivider(Modifier.padding(vertical = 8.dp), color = BillRule)
 							Total("Subtotal", r.subtotal)
 							if (r.discount.signum() > 0) Total("Discount", r.discount.negate())
 							Total("GST ${r.taxRate.stripTrailingZeros().toPlainString()}%", r.tax)
@@ -213,6 +233,9 @@ fun ReceiptScreen(id: Long, onBack: () -> Unit) {
 		}
 	}
 }
+
+private val BillMuted = Color(0xFF4B5646)
+private val BillRule = Color(0xFFC6CFBE)
 
 @Composable
 private fun Total(label: String, amount: BigDecimal, emphasis: Boolean = false) {

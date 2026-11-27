@@ -20,7 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Badge
-import androidx.compose.material3.Card
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -96,7 +96,7 @@ fun DashboardScreen(nav: NavController, modifier: Modifier = Modifier) {
 	val unread = (vm.state as? Loadable.Ready)?.value?.unreadNotifications ?: 0
 	Column(modifier.fillMaxSize()) {
 		TopAppBar(
-			title = { Text("Today", style = MaterialTheme.typography.headlineMedium) },
+			title = { Text("Overview", style = MaterialTheme.typography.headlineMedium) },
 			actions = {
 				IconButton(onClick = { nav.navigate(AlertsRoute) }) {
 					BadgedBox(badge = { if (unread > 0) Badge { Text("$unread") } }) {
@@ -115,7 +115,8 @@ fun DashboardScreen(nav: NavController, modifier: Modifier = Modifier) {
 
 @Composable
 private fun DashboardContent(d: Dashboard, onProduct: (Long) -> Unit) {
-	LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+	LazyColumn(contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 112.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+		item { SectionTitle("Today") }
 		item {
 			Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
 				Metric("Revenue", money(d.today.revenue), Modifier.weight(1f), highlight = true)
@@ -179,17 +180,21 @@ private fun SectionTitle(text: String) {
 @Composable
 private fun Metric(label: String, value: String, modifier: Modifier = Modifier, highlight: Boolean = false) {
 	val colors = MaterialTheme.colorScheme
-	Card(modifier, shape = RoundedCornerShape(24.dp)) {
-		Surface(color = if (highlight) colors.primaryContainer else colors.surfaceContainerHigh) {
-			Column(Modifier.fillMaxWidth().padding(16.dp)) {
-				Text(label, style = MaterialTheme.typography.labelLarge, color = colors.onSurfaceVariant)
-				Text(
-					value,
-					style = MaterialTheme.typography.titleLarge.numeric,
-					maxLines = 1,
-					autoSize = TextAutoSize.StepBased(minFontSize = 12.sp, maxFontSize = MaterialTheme.typography.titleLarge.fontSize),
-				)
-			}
+	Surface(
+		modifier = modifier,
+		shape = RoundedCornerShape(18.dp),
+		color = if (highlight) colors.primary else colors.surfaceContainerLow,
+		contentColor = if (highlight) colors.onPrimary else colors.onSurface,
+		border = if (highlight) null else BorderStroke(1.dp, colors.outlineVariant),
+	) {
+		Column(Modifier.fillMaxWidth().padding(16.dp)) {
+			Text(label.uppercase(), style = MaterialTheme.typography.labelMedium, color = if (highlight) colors.onPrimary else colors.onSurfaceVariant)
+			Text(
+				value,
+				style = MaterialTheme.typography.titleLarge.numeric,
+				maxLines = 1,
+				autoSize = TextAutoSize.StepBased(minFontSize = 12.sp, maxFontSize = MaterialTheme.typography.titleLarge.fontSize),
+			)
 		}
 	}
 }

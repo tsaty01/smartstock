@@ -57,7 +57,6 @@ import com.smartstock.app.ui.components.formatDate
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 val WARNING_LABELS = listOf(
@@ -116,7 +115,6 @@ class ProductEditViewModel(private val backend: Backend, private val id: Long) :
 	fun load() {
 		viewModelScope.launch {
 			categories = try {
-				val list = async { backend.call { categories() } }
 				if (id != 0L) {
 					val p = backend.call { product(id) }
 					form = ProductForm(
@@ -124,7 +122,7 @@ class ProductEditViewModel(private val backend: Backend, private val id: Long) :
 						p.expiryDate, p.warningLabel, p.description.orEmpty(), p.active,
 					)
 				}
-				Loadable.Ready(list.await())
+				Loadable.Ready(backend.call { categories() })
 			} catch (e: ApiError) {
 				Loadable.Failed(e.message.orEmpty())
 			}

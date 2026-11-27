@@ -71,7 +71,6 @@ import com.smartstock.app.ui.components.formatDate
 import com.smartstock.app.ui.components.formatInstant
 import com.smartstock.app.ui.components.money
 import com.smartstock.app.ui.theme.numeric
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -97,8 +96,9 @@ class ProductDetailViewModel(private val backend: Backend, private val id: Long,
 	fun load() {
 		viewModelScope.launch {
 			state = try {
-				val movements = async { if (management) backend.call { movements(id) }.content else emptyList() }
-				Loadable.Ready(ProductDetail(backend.call { product(id) }, movements.await()))
+				val product = backend.call { product(id) }
+				val movements = if (management) backend.call { movements(id) }.content else emptyList()
+				Loadable.Ready(ProductDetail(product, movements))
 			} catch (e: ApiError) {
 				Loadable.Failed(e.message.orEmpty())
 			}

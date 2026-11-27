@@ -58,7 +58,6 @@ import com.smartstock.app.ui.components.MessageBox
 import com.smartstock.app.ui.components.StockPill
 import com.smartstock.app.ui.components.money
 import com.smartstock.app.ui.theme.numeric
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 enum class StockFilter(val label: String, val matches: (Product) -> Boolean) {
@@ -88,9 +87,9 @@ class ProductsViewModel(private val backend: Backend, private val management: Bo
 		if (refresh) refreshing = true
 		viewModelScope.launch {
 			state = try {
-				val categories = async { backend.call { categories() } }
 				val products = backend.call { products(sellable = !management, includeInactive = management) }
-				Loadable.Ready(Catalog(products, categories.await()))
+				val categories = backend.call { categories() }
+				Loadable.Ready(Catalog(products, categories))
 			} catch (e: ApiError) {
 				Loadable.Failed(e.message.orEmpty())
 			}
@@ -148,7 +147,7 @@ fun ProductsScreen(user: User, nav: NavController, modifier: Modifier = Modifier
 					if (shown.isEmpty()) {
 						MessageBox(Icons.Outlined.Inventory2, "No products match")
 					} else {
-						LazyColumn(contentPadding = PaddingValues(bottom = 96.dp)) {
+						LazyColumn(contentPadding = PaddingValues(bottom = 112.dp)) {
 							items(shown, key = { it.id }) { product ->
 								ProductRow(product, showStock = user.role.isStaff) { nav.navigate(ProductRoute(product.id)) }
 							}
@@ -162,7 +161,7 @@ fun ProductsScreen(user: User, nav: NavController, modifier: Modifier = Modifier
 				onClick = { nav.navigate(ProductEditRoute()) },
 				icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
 				text = { Text("Add product") },
-				modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+				modifier = Modifier.align(Alignment.BottomEnd).padding(end = 16.dp, bottom = 112.dp),
 			)
 		}
 	}
