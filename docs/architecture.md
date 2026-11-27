@@ -3,16 +3,15 @@
 ```mermaid
 flowchart LR
     A["Android app<br/>Kotlin · Compose · M3 Expressive"] -->|HTTPS JSON /api| S
-    W["Browser"] -->|Thymeleaf pages, session + CSRF| S
     subgraph S["Spring Boot (server/)"]
         direction TB
-        C["REST + MVC controllers"] --> SV["Services: auth · inventory · billing · reporting"]
+        C["REST controllers"] --> SV["Services: auth · inventory · billing · reporting"]
         SV --> R["JPA repositories / JDBC queries"]
     end
     R --> DB[("PostgreSQL 18<br/>Flyway migrations")]
 ```
 
-One Spring Boot modular monolith serves both the Android REST API and the Thymeleaf website. Both clients share the same services and database.
+One Spring Boot modular monolith serves the Android REST API. Business services and the PostgreSQL database remain server-side; there is no browser UI.
 
 ## Runtime
 
@@ -42,9 +41,8 @@ Feature reference and known pitfalls: [reference-audit.md](reference-audit.md).
 
 - [x] Phase 0: audit, repository layout, Gradle build, Compose (app + PostgreSQL), health check, CI
 - [x] Flyway schema: categories, users, products, orders, order items, stock movements, discount rules, notifications
-- [x] Demo data (`demo` profile): synthetic users, hashed passwords
+- [x] Demo data (`demo` profile): synthetic users, hashed passwords, products, historical orders, stock movements and alerts
 - [x] API security: bearer tokens, role checks per endpoint, per-object ownership checks
-- [x] Browser security: session sign-in with CSRF on every form; the user is reloaded per request, so disabling an account ends its session
 - [x] Catalog: categories, products (full replacement, stock only via movements), search/filter, images
 - [x] Inventory: transactional restock and adjustment with stock movements; low-stock and expiry alerts in services
 - [x] Billing: transactional checkout with row locks, merged duplicate lines, validated discounts, configurable tax stored per order, quotes
@@ -52,5 +50,4 @@ Feature reference and known pitfalls: [reference-audit.md](reference-audit.md).
 - [x] Reports: daily summary, monthly sales, product and category performance, clearance, expiry
 - [x] Users: admin management, cashier customer lookup and in-place customer registration
 - [x] Integration and concurrency tests (embedded PostgreSQL 18)
-- [x] Thymeleaf website: role-aware pages for dashboard, products, categories, till, orders and receipts, alerts, reports, offers and users, calling the same services as the API
 - [x] Android app: role-aware Compose screens, encrypted session, server-priced till, signed release APKs

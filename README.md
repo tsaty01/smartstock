@@ -1,6 +1,6 @@
 # SmartStock
 
-Inventory and billing system for retail stores: a native Android app and a Spring MVC website on one Java 21 Spring Boot backend with PostgreSQL. UCS553 (Enterprise Web Application), TIET Patiala.
+Inventory and billing system for retail stores: a native Android app backed by a Java 21 Spring Boot REST API and PostgreSQL. UCS553 (Enterprise Web Application), TIET Patiala.
 
 Goals and plan: [GOAL.md](GOAL.md). Architecture: [docs/architecture.md](docs/architecture.md). REST API: [docs/api.md](docs/api.md).
 
@@ -22,7 +22,7 @@ curl http://localhost:8080/actuator/health
 curl -H 'Content-Type: application/json' -d '{"username":"manager","password":"smartstock"}' http://localhost:8080/api/auth/login
 ```
 
-With `SPRING_PROFILES_ACTIVE=demo`, sample data is loaded: products, discount rules and the accounts `admin`, `manager`, `cashier`, `cashier2`, `customer`, `customer2`, all with password `smartstock`. Leave the profile empty for a clean database.
+With `SPRING_PROFILES_ACTIVE=demo`, sample data is loaded: products, discount rules, sample sales across recent months, stock alerts and the accounts `admin`, `manager`, `cashier`, `cashier2`, `customer`, `customer2`, all with password `smartstock`. Leave the profile empty for a clean database.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
@@ -32,13 +32,8 @@ With `SPRING_PROFILES_ACTIVE=demo`, sample data is loaded: products, discount ru
 | `APP_PORT` | `8080` | Host port for the application |
 | `TOKEN_SECRET` | required | API token signing key, at least 32 characters |
 | `SPRING_PROFILES_ACTIVE` | empty | `demo` loads sample data |
-| `COOKIE_SECURE` | `false` | `true` marks the website session cookie Secure (use behind HTTPS) |
 
 Product images are stored in the `app-data` volume, the database in `db-data`.
-
-## Website
-
-Open http://localhost:8080 and sign in. Each role lands on its own page: management on the dashboard, cashiers on the till, customers on their purchases. New customers can register at `/register`. Set `COOKIE_SECURE=true` when the site is served over HTTPS.
 
 ## Android app
 
@@ -69,7 +64,7 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org). Work
 
 | Artifact | Where |
 | --- | --- |
-| `smartstock-server-<version>-all.jar`: executable fat JAR (includes the website) | GitHub release asset |
+| `smartstock-server-<version>-all.jar`: executable API server fat JAR | GitHub release asset |
 | `smartstock-server-<version>.jar`: plain JAR, dependencies not included | GitHub release asset |
 | Server image | `ghcr.io/<owner>/<repo>-server:<version>`, plus `latest` (main) or `dev` |
 | `smartstock-android-<version>.apk`: signed Android app | GitHub release asset |
