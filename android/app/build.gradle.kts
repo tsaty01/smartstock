@@ -32,7 +32,8 @@ android {
 			// Supplied by CI; without them the release APK is left unsigned.
 			System.getenv("ANDROID_KEYSTORE_FILE")?.let { storeFile = file(it) }
 			storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
-			keyAlias = System.getenv("ANDROID_KEY_ALIAS")
+			// Not secret. Kept out of the release environment so semantic-release does not mask "smartstock" in notes.
+			keyAlias = System.getenv("ANDROID_KEY_ALIAS") ?: "smartstock"
 			keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
 		}
 	}

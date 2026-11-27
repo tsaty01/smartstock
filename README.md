@@ -56,7 +56,7 @@ cd ../android
 ./gradlew lintDebug assembleDebug    # app/build/outputs/apk/debug
 ```
 
-Release APKs are signed in CI with the `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` and `ANDROID_KEY_PASSWORD` repository secrets.
+Release APKs are signed in CI with the `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_PASSWORD` repository secrets. The key alias is `smartstock`.
 
 ## Releases
 
