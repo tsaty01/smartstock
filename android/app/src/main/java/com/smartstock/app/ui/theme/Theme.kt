@@ -1,6 +1,9 @@
 package com.smartstock.app.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.Typography
@@ -18,73 +21,74 @@ import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import com.smartstock.app.R
 
-/** Brand palette: Navy, Glacier Blue and Lemon (GOAL.md section 9). */
-val Navy = Color(0xFF0C1B48)
-val GlacierBlue = Color(0xFF62A7EA)
-val Lemon = Color(0xFFF2EA1E)
+/** Forest ink, paper and warm brass. The icon uses the same forest green. */
+val Forest = Color(0xFF1A3A2A)
+val Paper = Color(0xFFF5EDDA)
+val Brass = Color(0xFFE9AE62)
 
 private val Light = lightColorScheme(
-	primary = Navy,
-	onPrimary = Color(0xFFFFFFFF),
-	primaryContainer = Color(0xFFD6E7FB),
-	onPrimaryContainer = Color(0xFF001B3D),
-	secondary = Color(0xFF4E5F7C),
-	onSecondary = Color(0xFFFFFFFF),
-	secondaryContainer = Color(0xFFCFE3FA),
-	onSecondaryContainer = Color(0xFF0A1C36),
-	tertiary = Color(0xFF636000),
-	onTertiary = Color(0xFFFFFFFF),
-	tertiaryContainer = Lemon,
-	onTertiaryContainer = Navy,
+	primary = Forest,
+	onPrimary = Color.White,
+	primaryContainer = Color(0xFFD1E6D3),
+	onPrimaryContainer = Color(0xFF0B2C1C),
+	secondary = Color(0xFF475F4C),
+	onSecondary = Color.White,
+	secondaryContainer = Color(0xFFDAE9D8),
+	onSecondaryContainer = Color(0xFF1A3922),
+	tertiary = Color(0xFF704D19),
+	onTertiary = Color.White,
+	tertiaryContainer = Brass,
+	onTertiaryContainer = Color(0xFF301B00),
 	error = Color(0xFFBA1A1A),
 	onError = Color(0xFFFFFFFF),
 	errorContainer = Color(0xFFFFDAD6),
 	onErrorContainer = Color(0xFF410002),
-	background = Color(0xFFF7F9FD),
-	onBackground = Color(0xFF191C22),
-	surface = Color(0xFFF7F9FD),
-	onSurface = Color(0xFF191C22),
-	surfaceVariant = Color(0xFFE0E2EC),
-	onSurfaceVariant = Color(0xFF444852),
-	surfaceContainerLowest = Color(0xFFFFFFFF),
-	surfaceContainerLow = Color(0xFFF1F4FA),
-	surfaceContainer = Color(0xFFEBEFF6),
-	surfaceContainerHigh = Color(0xFFE5E9F1),
-	surfaceContainerHighest = Color(0xFFDFE3EC),
-	outline = Color(0xFF747883),
-	outlineVariant = Color(0xFFC4C7D1),
+	// Screens sit on the paper texture drawn by SmartStockTheme, so the base surfaces are see-through.
+	background = Color.Transparent,
+	onBackground = Color(0xFF202A20),
+	surface = Color.Transparent,
+	onSurface = Color(0xFF202A20),
+	surfaceVariant = Color(0xFFE5DDC9),
+	onSurfaceVariant = Color(0xFF4B5646),
+	surfaceContainerLowest = Color(0xFFFFFAEE),
+	surfaceContainerLow = Color(0xFFF1E9D7),
+	surfaceContainer = Color(0xFFEBE1CC),
+	surfaceContainerHigh = Color(0xFFE4DAC4),
+	surfaceContainerHighest = Color(0xFFDCD0B8),
+	outline = Color(0xFF677463),
+	outlineVariant = Color(0xFFC6CFBE),
 )
 
 private val Dark = darkColorScheme(
-	primary = GlacierBlue,
-	onPrimary = Color(0xFF00213F),
-	primaryContainer = Color(0xFF1D3A6E),
-	onPrimaryContainer = Color(0xFFD6E7FB),
-	secondary = Color(0xFFB6C6E4),
-	onSecondary = Color(0xFF20304C),
-	secondaryContainer = Color(0xFF2A3C63),
-	onSecondaryContainer = Color(0xFFDCE6F9),
-	tertiary = Color(0xFFE5DD3A),
-	onTertiary = Color(0xFF333100),
-	tertiaryContainer = Lemon,
-	onTertiaryContainer = Navy,
+	primary = Color(0xFFB9DABA),
+	onPrimary = Color(0xFF102B1B),
+	primaryContainer = Color(0xFF244A32),
+	onPrimaryContainer = Color(0xFFD5EAD3),
+	secondary = Color(0xFFC5D7BD),
+	onSecondary = Color(0xFF253A27),
+	secondaryContainer = Color(0xFF304937),
+	onSecondaryContainer = Color(0xFFE1EEDB),
+	tertiary = Brass,
+	onTertiary = Color(0xFF301B00),
+	tertiaryContainer = Brass,
+	onTertiaryContainer = Color(0xFF301B00),
 	error = Color(0xFFFFB4AB),
 	onError = Color(0xFF690005),
 	errorContainer = Color(0xFF93000A),
 	onErrorContainer = Color(0xFFFFDAD6),
-	background = Color(0xFF0B1430),
-	onBackground = Color(0xFFE1E6F5),
-	surface = Color(0xFF0B1430),
-	onSurface = Color(0xFFE1E6F5),
-	surfaceVariant = Color(0xFF3F4762),
-	onSurfaceVariant = Color(0xFFC2C7D8),
-	surfaceContainerLowest = Color(0xFF070E24),
-	surfaceContainerLow = Color(0xFF111A38),
-	surfaceContainer = Color(0xFF15203F),
-	surfaceContainerHigh = Color(0xFF1F2A4A),
-	surfaceContainerHighest = Color(0xFF2A3556),
-	outline = Color(0xFF8D93A6),
-	outlineVariant = Color(0xFF3F4762),
+	background = Color.Transparent,
+	onBackground = Color(0xFFF1EAD8),
+	surface = Color.Transparent,
+	onSurface = Color(0xFFF1EAD8),
+	surfaceVariant = Color(0xFF334535),
+	onSurfaceVariant = Color(0xFFC6D1C0),
+	surfaceContainerLowest = Color(0xFF101811),
+	surfaceContainerLow = Color(0xFF2C4232),
+	surfaceContainer = Color(0xFF334A39),
+	surfaceContainerHigh = Color(0xFF3C5340),
+	surfaceContainerHighest = Color(0xFF465E49),
+	outline = Color(0xFFABBDA9),
+	outlineVariant = Color(0xFF465E48),
 )
 
 /** Stock-status colours, kept apart from the brand scheme so they always mean the same thing. */
@@ -146,8 +150,9 @@ fun SmartStockTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable 
 			colorScheme = if (dark) Dark else Light,
 			motionScheme = MotionScheme.expressive(),
 			typography = AppTypography,
-			content = content,
-		)
+		) {
+			Box(if (dark) Modifier.fillMaxSize().paper(dark = true) else Modifier.fillMaxSize().paper()) { content() }
+		}
 	}
 }
 
