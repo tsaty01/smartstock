@@ -1,0 +1,27 @@
+@startuml checkout
+!include style.iuml
+
+|Cashier (Android)|
+start
+repeat
+	:Add products by search or scan;
+	:Choose or register a customer;
+	|Server|
+	:Price the cart;
+	|Cashier (Android)|
+repeat while (Change the cart?) is ([yes]) not ([no])
+:Tap Charge;
+|Server|
+:Merge repeated lines;
+:Lock product rows in id order;
+if (Every line active, unexpired and in stock?) then ([yes])
+	:Apply discount and tax;
+	:Save order, items, stock changes and movements;
+	:Commit and return the receipt;
+else ([no])
+	:Roll back and return the problem;
+endif
+|Cashier (Android)|
+:Show the receipt or the problem;
+stop
+@enduml

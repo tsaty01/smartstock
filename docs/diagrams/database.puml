@@ -1,0 +1,109 @@
+@startuml database
+!include style.iuml
+' Restore the filled marker for NOT NULL columns.
+skinparam classAttributeIconSize 10
+hide circle
+hide empty members
+
+entity users {
+	* id : bigint <<PK>>
+	--
+	* username : varchar(50) <<unique, case-insensitive>>
+	* password_hash : varchar(100)
+	* role : varchar(16)
+	* full_name : varchar(100)
+	phone : varchar(10)
+	email : varchar(254)
+	* active : boolean
+	* created_at : timestamptz
+}
+entity categories {
+	* id : bigint <<PK>>
+	--
+	* name : varchar(100) <<unique, case-insensitive>>
+	description : varchar(255)
+	* created_at : timestamptz
+}
+entity products {
+	* id : bigint <<PK>>
+	--
+	* category_id : bigint <<FK>>
+	* name : varchar(150)
+	description : text
+	barcode : varchar(50) <<unique>>
+	* price : numeric(12,2)
+	* stock : integer
+	* reorder_level : integer
+	expiry_date : date
+	warning_label : varchar(100)
+	image_name : varchar(100)
+	* active : boolean
+	* version : bigint
+	* created_at : timestamptz
+	* updated_at : timestamptz
+}
+entity discount_rules {
+	* id : bigint <<PK>>
+	--
+	* name : varchar(100)
+	* min_quantity : integer
+	* min_amount : numeric(12,2)
+	* percent : numeric(5,2)
+	* active : boolean
+	valid_from : date
+	valid_to : date
+}
+entity orders {
+	* id : bigint <<PK>>
+	--
+	* customer_id : bigint <<FK>>
+	* cashier_id : bigint <<FK>>
+	* payment_mode : varchar(8)
+	* subtotal : numeric(12,2)
+	* discount : numeric(12,2)
+	* tax_rate : numeric(5,2)
+	* tax : numeric(12,2)
+	* total : numeric(12,2)
+	* created_at : timestamptz
+}
+entity order_items {
+	* id : bigint <<PK>>
+	--
+	* order_id : bigint <<FK>>
+	* product_id : bigint <<FK>>
+	* product_name : varchar(150)
+	* quantity : integer
+	* unit_price : numeric(12,2)
+	* line_total : numeric(12,2)
+}
+entity stock_movements {
+	* id : bigint <<PK>>
+	--
+	* product_id : bigint <<FK>>
+	order_id : bigint <<FK>>
+	* performed_by : bigint <<FK>>
+	* change : integer
+	* reason : varchar(16)
+	notes : varchar(255)
+	* created_at : timestamptz
+}
+entity notifications {
+	* id : bigint <<PK>>
+	--
+	* type : varchar(16)
+	* message : varchar(255)
+	product_id : bigint <<FK>>
+	* read : boolean
+	* created_at : timestamptz
+}
+
+categories ||--o{ products
+users ||--o{ orders : customer_id
+users ||--o{ orders : cashier_id
+orders ||--|{ order_items
+products ||--o{ order_items
+products ||--o{ stock_movements
+orders |o--o{ stock_movements
+users ||--o{ stock_movements : performed_by
+products |o--o{ notifications
+@enduml
