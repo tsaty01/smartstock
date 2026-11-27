@@ -154,8 +154,13 @@ class InventoryTests extends ApiTestSupport {
 			.header(HttpHeaders.AUTHORIZATION, "Bearer " + manager)).andExpect(status().isNoContent());
 		get(manager, "/api/products/" + product + "/image").andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.IMAGE_PNG));
-		get(manager, "/api/products/" + product)
-			.andExpect(jsonPath("$.imageUrl").value("/api/products/" + product + "/image"));
+		String firstUrl = read(get(manager, "/api/products/" + product), "$.imageUrl");
+		assertThat(firstUrl).startsWith("/api/products/" + product + "/image?v=");
+		images.store(product, new MockMultipartFile("file", "replacement.png", "image/png", PNG));
+		String replacementUrl = read(get(manager, "/api/products/" + product), "$.imageUrl");
+		assertThat(replacementUrl).isNotEqualTo(firstUrl);
+		get(manager, replacementUrl).andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.IMAGE_PNG));
 
 		mvc.perform(multipart(HttpMethod.PUT, "/api/products/" + product + "/image")
 			.file(new MockMultipartFile("file", "fake.png", "image/png", "not an image".getBytes()))

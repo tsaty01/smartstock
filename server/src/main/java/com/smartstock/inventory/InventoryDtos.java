@@ -59,7 +59,7 @@ public final class InventoryDtos {
 
 		public static ProductView of(Product p, LocalDate today) {
 			Long daysToExpiry = p.getExpiryDate() == null ? null : ChronoUnit.DAYS.between(today, p.getExpiryDate());
-			String imageUrl = p.getImageName() == null ? null : "/api/products/%d/image".formatted(p.getId());
+			String imageUrl = p.getImageName() == null ? null : "/api/products/%d/image?v=%s".formatted(p.getId(), p.getImageName());
 			return new ProductView(p.getId(), p.getCategory().getId(), p.getCategory().getName(), p.getName(),
 					p.getDescription(), p.getBarcode(), p.getPrice(), p.getStock(), p.getReorderLevel(),
 					p.getExpiryDate(), daysToExpiry, p.getWarningLabel(), imageUrl, p.isActive(), p.isLowStock(),
