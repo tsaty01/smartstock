@@ -23,3 +23,5 @@ jobs:
       - run: bash .github/scripts/publish-image.sh "${{ inputs.version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KOMODO_URL: ${{ vars.KOMODO_URL }}
+          KOMODO_WEBHOOK_SECRET: ${{ secrets.KOMODO_WEBHOOK_SECRET }}
