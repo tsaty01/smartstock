@@ -1,3 +1,9 @@
+## [1.0.1-dev.1](https://github.com/tsaty01/smartstock/compare/v1.0.0...v1.0.1-dev.1) (2026-11-28)
+
+### Bug Fixes
+
+* **deploy:** label released image with source revision ([a6817d7](https://github.com/tsaty01/smartstock/commit/a6817d7f5ebfd29966e2d4f814dc3ca9809ca558))
+
 ## 1.0.0 (2026-11-27)
 
 ### Features
