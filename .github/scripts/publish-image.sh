@@ -14,6 +14,7 @@ docker buildx build server \
     --push \
     --label "org.opencontainers.image.source=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
     --label "org.opencontainers.image.version=${version}" \
+    --label "org.opencontainers.image.revision=$(git rev-parse HEAD)" \
     --tag "${image}:${version}" \
     --tag "${image}:${moving_tag}"
 
